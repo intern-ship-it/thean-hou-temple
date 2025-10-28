@@ -10,7 +10,7 @@ thean-hou-temple/
 
 ├── frontend/          # React + Vite + Tailwind CSS
 
-├── backend/           # Laravel 11 API
+├── backend/           # Laravel 12 API
 
 ├── deploy.sh          # Production build script
 
