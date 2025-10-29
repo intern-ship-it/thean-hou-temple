@@ -6,7 +6,7 @@ import Bookings from "./pages/hallBooking/Bookings";
 import Quotations from "./pages/hallBooking/Quotations";
 // Layout
 import MainLayout from "./components/layout/MainLayout";
-
+import Halls from "./pages/hallBooking/Halls";
 // Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Login from "./pages/auth/Login";
@@ -123,7 +123,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-
+          <Route
+            path="hall/halls"
+            element={
+              <ProtectedRoute requiredRoles={["admin"]}>
+                <Halls />
+              </ProtectedRoute>
+            }
+          />
           {/* Hall Booking Routes */}
           <Route
             path="hall/customers"

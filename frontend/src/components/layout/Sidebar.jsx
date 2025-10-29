@@ -15,6 +15,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Flame,
+  Utensils,
+  ChefHat,
+  Package,
 } from "lucide-react";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -63,8 +66,40 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       icon: FileText,
       roles: ["super_admin", "hall_manager"],
     },
-
+    // ==========================================
+    // MASTER SETUP
+    // ==========================================
+    {
+      type: "header",
+      label: "🔧 MASTER SETUP",
+      roles: ["super_admin"],
+    },
+    {
+      name: "Halls Master",
+      href: "/hall/halls",
+      icon: Building2,
+      roles: ["super_admin"],
+    },
+    {
+      name: "Billing Items",
+      href: "/hall/billing-items",
+      icon: Package,
+      roles: ["super_admin"],
+    },
+    {
+      name: "Dinner Packages",
+      href: "/hall/dinner-packages",
+      icon: Utensils,
+      roles: ["super_admin"],
+    },
+    {
+      name: "Catering Vendors",
+      href: "/hall/catering-vendors",
+      icon: ChefHat,
+      roles: ["super_admin"],
+    },
     // Settings
+    { type: "divider" },
     {
       name: "Settings",
       href: "/settings",
@@ -73,10 +108,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     },
   ];
 
-  const canAccess = (roles) => {
-    if (roles.includes("all")) return true;
-    return roles.includes(user?.role);
-  };
+ const canAccess = (roles) => {
+   if (!roles) return true; // Items without roles are accessible to all
+   if (roles.includes("all")) return true;
+   return roles.includes(user?.role);
+ };
 
   const isActive = (href) => {
     return location.pathname === href;
@@ -128,6 +164,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0
           shadow-2xl
+            flex flex-col
         `}
       >
         {/* Decorative Pattern Overlay */}
@@ -135,8 +172,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')]"></div>
         </div>
 
-        {/* Logo Section */}
-        <div className="relative h-24 flex items-center justify-between px-4 border-b-2 border-amber-500/30 mt-2">
+        {/* Logo Section - Fixed at top */}
+        <div className="relative h-20 flex items-center justify-between px-4 border-b-2 border-amber-500/30 flex-shrink-0">
           <div className="flex items-center space-x-3">
             {/* Enhanced Logo with Animation */}
             <motion.div
@@ -148,15 +185,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               <div className="absolute inset-0 bg-amber-400 rounded-xl blur-lg opacity-50 animate-pulse"></div>
 
               {/* Logo Container */}
-              <div className="relative w-12 h-12 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-2xl border-2 border-amber-300">
+              <div className="relative w-10 h-10 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-2xl border-2 border-amber-300">
                 {/* Temple Icon */}
-                <Building2 className="w-7 h-7 text-red-900" />
-
-                {/* Decorative Corners */}
-                <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-white rounded-tl"></div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-white rounded-tr"></div>
-                <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-white rounded-bl"></div>
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-white rounded-br"></div>
+                <Building2 className="w-6 h-6 text-red-900" />
+                <div className="absolute -top-1 -left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-white rounded-tl"></div>
+                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-white rounded-tr"></div>
+                <div className="absolute -bottom-1 -left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-white rounded-bl"></div>
+                <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-white rounded-br"></div>
               </div>
             </motion.div>
 
@@ -217,11 +252,62 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           </motion.button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-6 px-3 scrollbar-thin scrollbar-thumb-amber-700 scrollbar-track-red-900/50">
-          <motion.ul className="space-y-2">
+        {/* Navigation - Scrollable */}
+        <nav className="flex-1 overflow-y-auto py-6 px-3">
+          <style>{`
+            /* Custom scrollbar */
+            nav::-webkit-scrollbar {
+              width: 6px;
+            }
+            nav::-webkit-scrollbar-track {
+              background: rgba(127, 29, 29, 0.2);
+              border-radius: 10px;
+            }
+            nav::-webkit-scrollbar-thumb {
+              background: rgba(217, 119, 6, 0.5);
+              border-radius: 10px;
+            }
+            nav::-webkit-scrollbar-thumb:hover {
+              background: rgba(217, 119, 6, 0.8);
+            }
+          `}</style>
+          <motion.ul className="space-y-1.5">
             {navigation.map((item, index) => {
               if (!canAccess(item.roles)) return null;
+
+              // Section Header
+              if (item.type === "header") {
+                return (
+                  <AnimatePresence key={`header-${index}`}>
+                    {isOpen && (
+                      <motion.li
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="px-4 pt-4 pb-2 text-xs font-bold text-amber-400 uppercase tracking-wider"
+                      >
+                        {item.label}
+                      </motion.li>
+                    )}
+                  </AnimatePresence>
+                );
+              }
+
+              // Divider
+              if (item.type === "divider") {
+                return (
+                  <AnimatePresence key={`divider-${index}`}>
+                    {isOpen && (
+                      <motion.li
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="my-3 mx-4 border-t-2 border-amber-500/30"
+                      />
+                    )}
+                  </AnimatePresence>
+                );
+              }
 
               const Icon = item.icon;
               const active = isActive(item.href);
@@ -304,14 +390,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="p-4 border-t-2 border-amber-500/30 bg-red-950/50 backdrop-blur-sm"
+              className="p-3 border-t-2 border-amber-500/30 bg-red-950/50 backdrop-blur-sm flex-shrink-0"
             >
-              <div className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/20">
+              <div className="flex items-center space-x-3 p-2.5 rounded-xl bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/20">
                 {/* Avatar with Animation */}
                 <motion.div whileHover={{ scale: 1.1 }} className="relative">
                   <div className="absolute inset-0 bg-amber-400 rounded-full blur animate-pulse"></div>
-                  <div className="relative w-11 h-11 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center border-2 border-amber-300 shadow-lg">
-                    <span className="text-red-900 font-bold text-lg">
+                  <div className="relative w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center border-2 border-amber-300 shadow-lg">
+                    <span className="text-red-900 font-bold text-base">
                       {user.name?.charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -319,7 +405,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
                 {/* User Details */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-amber-100 truncate">{user.name}</p>
+                  <p className="text-sm font-bold text-amber-100 truncate">
+                    {user.name}
+                  </p>
                   <p className="text-xs text-amber-300 truncate capitalize flex items-center">
                     <span className="inline-block w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
                     {user.role?.replace("_", " ")}
@@ -331,7 +419,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         </AnimatePresence>
 
         {/* Decorative Bottom Border */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent pointer-events-none"></div>
       </motion.aside>
     </>
   );
