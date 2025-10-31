@@ -3,217 +3,398 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreBookingRequest;
-use App\Http\Requests\UpdateBookingRequest;
-use App\Http\Resources\BookingResource;
 use App\Models\Booking;
-use App\Models\BookingItem;
-use App\Models\BookingDinnerPackage;
+use App\Http\Resources\BookingResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    /**
+     * Display a listing of bookings
+     */
+    public function index(Request $request)
     {
-        $perPage = $request->input('per_page', 15);
-        $status = $request->input('status', '');
-        $startDate = $request->input('start_date', '');
-        $endDate = $request->input('end_date', '');
-
-        $bookings = Booking::query()
-            ->with(['customer', 'hall', 'bookingItems.billingItem', 'dinnerPackage.dinnerPackage', 'dinnerPackage.cateringVendor'])
-            ->when($status, fn($q) => $q->byStatus($status))
-            ->when($startDate && $endDate, fn($q) => $q->byDateRange($startDate, $endDate))
-            ->orderBy('event_date', 'desc')
-            ->paginate($perPage);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Bookings retrieved successfully',
-            'data' => BookingResource::collection($bookings->items()),
-            'meta' => [
-                'current_page' => $bookings->currentPage(),
-                'last_page' => $bookings->lastPage(),
-                'per_page' => $bookings->perPage(),
-                'total' => $bookings->total(),
-            ],
+        $query = Booking::with([
+            'customer',
+            'hall',
+            'bookingItems.billingItem',
+            'dinnerPackage.package',
+            'dinnerPackage.vendor'
         ]);
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by date range
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('event_date', [
+                $request->start_date,
+                $request->end_date
+            ]);
+        }
+
+        // Filter by customer
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        // Filter by hall
+        if ($request->filled('hall_id')) {
+            $query->where('hall_id', $request->hall_id);
+        }
+
+        // Search by booking code
+        if ($request->filled('search')) {
+            $query->where('booking_code', 'like', '%' . $request->search . '%');
+        }
+
+        // Order by event date descending
+        $query->orderBy('event_date', 'desc');
+
+        $perPage = $request->input('per_page', 15);
+        $bookings = $query->paginate($perPage);
+
+        return BookingResource::collection($bookings);
     }
 
-    public function store(StoreBookingRequest $request): JsonResponse
+    /**
+     * Display a specific booking
+     */
+    public function show($id)
     {
+        $booking = Booking::with([
+            'customer',
+            'hall',
+            'bookingItems.billingItem',
+            'dinnerPackage.package',
+            'dinnerPackage.vendor'
+        ])->findOrFail($id);
+
+        return new BookingResource($booking);
+    }
+
+    /**
+     * Store a newly created booking
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'customer_id' => 'required|exists:customers,id',
+            'hall_id' => 'required|exists:halls,id',
+            'booking_type' => 'required|in:standard,with_dinner',
+            'event_date' => 'required|date',
+            'time_slot' => 'required|in:morning,evening',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
+            'event_type' => 'nullable|string|max:100',
+            'guest_count' => 'nullable|integer|min:0',
+            'status' => 'required|in:pending,confirmed,cancelled,completed',
+
+            // Booking items
+            'booking_items' => 'nullable|array',
+            'booking_items.*.billing_item_id' => 'required|exists:billing_items,id',
+            'booking_items.*.quantity' => 'required|integer|min:1',
+            'booking_items.*.unit_price' => 'required|numeric|min:0',
+            'booking_items.*.remarks' => 'nullable|string',
+
+            // Dinner package
+            'dinner_package' => 'nullable|array',
+            'dinner_package.dinner_package_id' => 'required_with:dinner_package|exists:dinner_packages,id',
+            'dinner_package.catering_vendor_id' => 'required_with:dinner_package|exists:catering_vendors,id',
+            'dinner_package.number_of_tables' => 'required_with:dinner_package|integer|min:1',
+            'dinner_package.special_menu_requests' => 'nullable|string',
+
+            // Pricing
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'tax_percentage' => 'nullable|numeric|min:0|max:100',
+            'deposit_amount' => 'nullable|numeric|min:0',
+
+            // Additional info
+            'special_requests' => 'nullable|string',
+            'internal_notes' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         DB::beginTransaction();
-
         try {
-            // Create booking
-            $bookingData = $request->except(['items', 'dinner_package']);
-            $bookingData['created_by'] = auth()->id();
-            $booking = Booking::create($bookingData);
+            // Create booking with all fields
+            $booking = Booking::create($request->only([
+                'customer_id',
+                'hall_id',
+                'booking_type',
+                'event_date',
+                'time_slot',
+                'start_time',
+                'end_time',
+                'event_type',
+                'guest_count',
+                'status',
+                'discount_percentage',
+                'tax_percentage',
+                'deposit_amount',
+                'special_requests',
+                'internal_notes',
+            ]));
 
-            // Add booking items
-            foreach ($request->items as $item) {
-                BookingItem::create([
-                    'booking_id' => $booking->id,
-                    'billing_item_id' => $item['billing_item_id'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'remarks' => $item['remarks'] ?? null,
+            // Create booking items if provided
+            if ($request->has('booking_items')) {
+                foreach ($request->booking_items as $item) {
+                    $booking->bookingItems()->create([
+                        'billing_item_id' => $item['billing_item_id'],
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $item['unit_price'],
+                        'total_price' => $item['quantity'] * $item['unit_price'],
+                        'remarks' => $item['remarks'] ?? null,
+                    ]);
+                }
+            }
+
+            // Create dinner package if provided
+            if ($request->has('dinner_package') && $request->booking_type === 'with_dinner') {
+                $dinnerData = $request->dinner_package;
+                $booking->dinnerPackage()->create([
+                    'dinner_package_id' => $dinnerData['dinner_package_id'],
+                    'catering_vendor_id' => $dinnerData['catering_vendor_id'],
+                    'number_of_tables' => $dinnerData['number_of_tables'],
+                    'special_menu_requests' => $dinnerData['special_menu_requests'] ?? null,
                 ]);
             }
 
-            // Add dinner package if applicable
-            if ($request->booking_type === 'dinner_package' && $request->has('dinner_package')) {
-                $packageData = $request->dinner_package;
-                $package = \App\Models\DinnerPackage::findOrFail($packageData['dinner_package_id']);
-
-                BookingDinnerPackage::create([
-                    'booking_id' => $booking->id,
-                    'dinner_package_id' => $packageData['dinner_package_id'],
-                    'catering_vendor_id' => $packageData['catering_vendor_id'],
-                    'number_of_tables' => $packageData['number_of_tables'],
-                    'price_per_table' => $package->price_per_table,
-                    'special_menu_requests' => $packageData['special_menu_requests'] ?? null,
-                ]);
-            }
-
-            // Calculate and update total
-            $booking->total_amount = $booking->calculateTotal();
+            // Recalculate totals
+            $booking->calculateTotals();
             $booking->save();
 
             DB::commit();
 
+            // Load relationships for response
+            $booking->load([
+                'customer',
+                'hall',
+                'bookingItems.billingItem',
+                'dinnerPackage.package',
+                'dinnerPackage.vendor'
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Booking created successfully',
-                'data' => new BookingResource($booking->load(['customer', 'hall', 'bookingItems.billingItem', 'dinnerPackage'])),
+                'data' => new BookingResource($booking)
             ], 201);
+
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create booking',
-                'error' => $e->getMessage(),
+                'message' => 'Failed to create booking: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    public function show(Booking $booking): JsonResponse
+    /**
+     * Update an existing booking
+     */
+    public function update(Request $request, $id)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking retrieved successfully',
-            'data' => new BookingResource($booking->load(['customer', 'hall', 'bookingItems.billingItem', 'dinnerPackage.dinnerPackage', 'dinnerPackage.cateringVendor', 'payments'])),
+        $booking = Booking::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'customer_id' => 'sometimes|required|exists:customers,id',
+            'hall_id' => 'sometimes|required|exists:halls,id',
+            'booking_type' => 'sometimes|required|in:standard,with_dinner',
+            'event_date' => 'sometimes|required|date',
+            'time_slot' => 'sometimes|required|in:morning,evening',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
+            'event_type' => 'nullable|string|max:100',
+            'guest_count' => 'nullable|integer|min:0',
+            'status' => 'sometimes|required|in:pending,confirmed,cancelled,completed',
+
+            // Booking items
+            'booking_items' => 'nullable|array',
+            'booking_items.*.billing_item_id' => 'required|exists:billing_items,id',
+            'booking_items.*.quantity' => 'required|integer|min:1',
+            'booking_items.*.unit_price' => 'required|numeric|min:0',
+            'booking_items.*.remarks' => 'nullable|string',
+
+            // Dinner package
+            'dinner_package' => 'nullable|array',
+            'dinner_package.dinner_package_id' => 'required_with:dinner_package|exists:dinner_packages,id',
+            'dinner_package.catering_vendor_id' => 'required_with:dinner_package|exists:catering_vendors,id',
+            'dinner_package.number_of_tables' => 'required_with:dinner_package|integer|min:1',
+            'dinner_package.special_menu_requests' => 'nullable|string',
+
+            // Pricing
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'tax_percentage' => 'nullable|numeric|min:0|max:100',
+            'deposit_amount' => 'nullable|numeric|min:0',
+
+            // Additional info
+            'special_requests' => 'nullable|string',
+            'internal_notes' => 'nullable|string',
         ]);
-    }
 
-    public function update(UpdateBookingRequest $request, Booking $booking): JsonResponse
-    {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         DB::beginTransaction();
-
         try {
-            $booking->update($request->except(['items']));
+            // Update booking
+            $booking->update($request->only([
+                'customer_id',
+                'hall_id',
+                'booking_type',
+                'event_date',
+                'time_slot',
+                'start_time',
+                'end_time',
+                'event_type',
+                'guest_count',
+                'status',
+                'discount_percentage',
+                'tax_percentage',
+                'deposit_amount',
+                'special_requests',
+                'internal_notes',
+            ]));
 
-            // Update items if provided
-            if ($request->has('items')) {
-                // Delete old items
+            // Update booking items if provided
+            if ($request->has('booking_items')) {
+                // Delete existing items
                 $booking->bookingItems()->delete();
 
-                // Add new items
-                foreach ($request->items as $item) {
-                    BookingItem::create([
-                        'booking_id' => $booking->id,
+                // Create new items
+                foreach ($request->booking_items as $item) {
+                    $booking->bookingItems()->create([
                         'billing_item_id' => $item['billing_item_id'],
                         'quantity' => $item['quantity'],
                         'unit_price' => $item['unit_price'],
+                        'total_price' => $item['quantity'] * $item['unit_price'],
                         'remarks' => $item['remarks'] ?? null,
                     ]);
                 }
-
-                // Recalculate total
-                $booking->total_amount = $booking->calculateTotal();
-                $booking->save();
             }
 
+            // Update dinner package if provided
+            if ($request->has('dinner_package')) {
+                $booking->dinnerPackage()->delete();
+
+                if ($request->booking_type === 'with_dinner') {
+                    $dinnerData = $request->dinner_package;
+                    $booking->dinnerPackage()->create([
+                        'dinner_package_id' => $dinnerData['dinner_package_id'],
+                        'catering_vendor_id' => $dinnerData['catering_vendor_id'],
+                        'number_of_tables' => $dinnerData['number_of_tables'],
+                        'special_menu_requests' => $dinnerData['special_menu_requests'] ?? null,
+                    ]);
+                }
+            }
+
+            // Recalculate totals
+            $booking->calculateTotals();
+            $booking->save();
+
             DB::commit();
+
+            // Load relationships for response
+            $booking->load([
+                'customer',
+                'hall',
+                'bookingItems.billingItem',
+                'dinnerPackage.package',
+                'dinnerPackage.vendor'
+            ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Booking updated successfully',
-                'data' => new BookingResource($booking->fresh()->load(['customer', 'hall', 'bookingItems.billingItem', 'dinnerPackage'])),
-            ]);
+                'data' => new BookingResource($booking)
+            ], 200);
+
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update booking',
-                'error' => $e->getMessage(),
+                'message' => 'Failed to update booking: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    public function destroy(Booking $booking): JsonResponse
+    /**
+     * Remove a booking
+     */
+    public function destroy($id)
     {
-        try {
-            // Only allow deletion of pending bookings
-            if ($booking->status !== 'pending') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Only pending bookings can be deleted',
-                ], 422);
-            }
-
-            $booking->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Booking deleted successfully',
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete booking',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    public function upcoming(): JsonResponse
-    {
-        $bookings = Booking::upcoming()
-            ->with(['customer', 'hall'])
-            ->orderBy('event_date')
-            ->take(10)
-            ->get();
+        $booking = Booking::findOrFail($id);
+        $booking->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Upcoming bookings retrieved successfully',
-            'data' => BookingResource::collection($bookings),
-        ]);
+            'message' => 'Booking deleted successfully'
+        ], 200);
     }
 
-    public function statistics(): JsonResponse
+    /**
+     * Get upcoming bookings
+     */
+    public function upcoming()
+    {
+        $bookings = Booking::with([
+            'customer',
+            'hall',
+            'bookingItems.billingItem',
+            'dinnerPackage.package',
+            'dinnerPackage.vendor'
+        ])
+            ->where('event_date', '>=', now())
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->orderBy('event_date', 'asc')
+            ->limit(10)
+            ->get();
+
+        return BookingResource::collection($bookings);
+    }
+
+    /**
+     * Get booking statistics
+     */
+    public function statistics()
     {
         $stats = [
-            'total' => Booking::count(),
-            'pending' => Booking::byStatus('pending')->count(),
-            'confirmed' => Booking::byStatus('confirmed')->count(),
-            'completed' => Booking::byStatus('completed')->count(),
-            'cancelled' => Booking::byStatus('cancelled')->count(),
-            'upcoming' => Booking::upcoming()->count(),
-            'this_month' => Booking::whereMonth('event_date', now()->month)
+            'total_bookings' => Booking::count(),
+            'pending_bookings' => Booking::where('status', 'pending')->count(),
+            'confirmed_bookings' => Booking::where('status', 'confirmed')->count(),
+            'completed_bookings' => Booking::where('status', 'completed')->count(),
+            'cancelled_bookings' => Booking::where('status', 'cancelled')->count(),
+            'total_revenue' => Booking::whereIn('status', ['confirmed', 'completed'])
+                ->sum('total_amount'),
+            'this_month_bookings' => Booking::whereMonth('event_date', now()->month)
                 ->whereYear('event_date', now()->year)
                 ->count(),
+            'this_month_revenue' => Booking::whereMonth('event_date', now()->month)
+                ->whereYear('event_date', now()->year)
+                ->whereIn('status', ['confirmed', 'completed'])
+                ->sum('total_amount'),
         ];
 
         return response()->json([
             'success' => true,
-            'message' => 'Booking statistics retrieved successfully',
-            'data' => $stats,
+            'data' => $stats
         ]);
     }
 }

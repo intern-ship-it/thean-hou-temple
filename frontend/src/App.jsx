@@ -2,19 +2,32 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Bookings from "./pages/hallBooking/Bookings";
-import Quotations from "./pages/hallBooking/Quotations";
+
 // Layout
 import MainLayout from "./components/layout/MainLayout";
-import Halls from "./pages/hallBooking/Halls";
+
 // Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Login from "./pages/auth/Login";
-import Customers from "./pages/hallBooking/Customers";
+
 // Pages
 import Dashboard from "./pages/Dashboard";
+
+// Temple Operations
 import Devotees from "./pages/templeOperations/Devotees";
 
+// Hall Booking - Operational Pages
+import Customers from "./pages/hallBooking/Customers";
+import Bookings from "./pages/hallBooking/Bookings";
+import Quotations from "./pages/hallBooking/Quotations";
+
+// Hall Booking - Master Setup Pages
+import Halls from "./pages/hallBooking/Halls";
+import BillingItems from "./pages/hallBooking/BillingItems"; // ADD THIS
+import DinnerPackages from "./pages/hallBooking/DinnerPackages"; // ADD THIS
+import CateringVendors from "./pages/hallBooking/CateringVendors"; // WE'LL CREATE THIS
+
+// Placeholder Pages
 const PagodaLightsPage = () => (
   <div className="bg-white rounded-xl shadow-md p-8">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -33,31 +46,12 @@ const DonationsPage = () => (
   </div>
 );
 
-// Hall Booking Pages (Placeholders for now)
-const CustomersPage = () => (
+const PaymentsPage = () => (
   <div className="bg-white rounded-xl shadow-md p-8">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">
-      Customers Management
+      Payments Management
     </h2>
-    <p className="text-gray-600">Customers page coming soon...</p>
-  </div>
-);
-
-const BookingsPage = () => (
-  <div className="bg-white rounded-xl shadow-md p-8">
-    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-      Bookings Management
-    </h2>
-    <p className="text-gray-600">Bookings page coming soon...</p>
-  </div>
-);
-
-const QuotationsPage = () => (
-  <div className="bg-white rounded-xl shadow-md p-8">
-    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-      Quotations Management
-    </h2>
-    <p className="text-gray-600">Quotations page coming soon...</p>
+    <p className="text-gray-600">Payments page coming soon...</p>
   </div>
 );
 
@@ -98,11 +92,11 @@ function App() {
           {/* Dashboard */}
           <Route index element={<Dashboard />} />
 
-          {/* Temple Operations Routes */}
+          {/* ==================== TEMPLE OPERATIONS ==================== */}
           <Route
             path="temple/devotees"
             element={
-              <ProtectedRoute requiredRoles={["temple_staff"]}>
+              <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
                 <Devotees />
               </ProtectedRoute>
             }
@@ -110,7 +104,7 @@ function App() {
           <Route
             path="temple/pagoda-lights"
             element={
-              <ProtectedRoute requiredRoles={["temple_staff"]}>
+              <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
                 <PagodaLightsPage />
               </ProtectedRoute>
             }
@@ -118,24 +112,17 @@ function App() {
           <Route
             path="temple/donations"
             element={
-              <ProtectedRoute requiredRoles={["temple_staff"]}>
+              <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
                 <DonationsPage />
               </ProtectedRoute>
             }
           />
-          <Route
-            path="hall/halls"
-            element={
-              <ProtectedRoute requiredRoles={["admin"]}>
-                <Halls />
-              </ProtectedRoute>
-            }
-          />
-          {/* Hall Booking Routes */}
+
+          {/* ==================== HALL BOOKING - OPERATIONAL ==================== */}
           <Route
             path="hall/customers"
             element={
-              <ProtectedRoute requiredRoles={["hall_manager"]}>
+              <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
                 <Customers />
               </ProtectedRoute>
             }
@@ -143,24 +130,65 @@ function App() {
           <Route
             path="hall/bookings"
             element={
-              <ProtectedRoute requiredRoles={["hall_manager"]}>
+              <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
                 <Bookings />
               </ProtectedRoute>
             }
           />
-
           <Route
             path="hall/quotations"
             element={
-              <ProtectedRoute requiredRoles={["hall_manager"]}>
+              <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
                 <Quotations />
               </ProtectedRoute>
             }
           />
-        </Route>
+          <Route
+            path="hall/payments"
+            element={
+              <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
+                <PaymentsPage />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* 404 - Redirect to home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+          {/* ==================== HALL BOOKING - MASTER SETUP ==================== */}
+          <Route
+            path="hall/halls"
+            element={
+              <ProtectedRoute requiredRoles={["super_admin"]}>
+                <Halls />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="hall/billing-items"
+            element={
+              <ProtectedRoute requiredRoles={["super_admin"]}>
+                <BillingItems />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="hall/dinner-packages"
+            element={
+              <ProtectedRoute requiredRoles={["super_admin"]}>
+                <DinnerPackages />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="hall/catering-vendors"
+            element={
+              <ProtectedRoute requiredRoles={["super_admin"]}>
+                <CateringVendors />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Catch all - redirect to dashboard */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

@@ -21,36 +21,84 @@ class Booking extends Model
         'event_type',
         'guest_count',
         'status',
+        'hall_rental_amount',
+        'additional_items_amount',
+        'dinner_package_amount',
+        'subtotal',
+        'discount_amount',
+        'discount_percentage',
+        'tax_amount',
+        'tax_percentage',
         'total_amount',
         'deposit_amount',
-        'deposit_paid',
-        'deposit_paid_date',
-        'fifty_percent_paid',
-        'fifty_percent_paid_date',
-        'fully_paid',
-        'fully_paid_date',
+        'balance_amount',
         'special_requests',
         'internal_notes',
-        'cancelled_reason',
-        'cancelled_at',
-        'created_by',
     ];
 
     protected $casts = [
         'event_date' => 'date',
-        'deposit_paid_date' => 'date',
-        'fifty_percent_paid_date' => 'date',
-        'fully_paid_date' => 'date',
-        'cancelled_at' => 'datetime',
-        'deposit_paid' => 'boolean',
-        'fifty_percent_paid' => 'boolean',
-        'fully_paid' => 'boolean',
+        'guest_count' => 'integer',
+        'hall_rental_amount' => 'decimal:2',
+        'additional_items_amount' => 'decimal:2',
+        'dinner_package_amount' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'discount_percentage' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'tax_percentage' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'deposit_amount' => 'decimal:2',
-        'guest_count' => 'integer',
+        'balance_amount' => 'decimal:2',
     ];
 
-    // Boot
+    /**
+     * Get the customer that owns the booking
+     */
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * Get the hall for this booking
+     */
+    public function hall()
+    {
+        return $this->belongsTo(Hall::class);
+    }
+
+    /**
+     * Get the booking items
+     */
+    public function bookingItems()
+    {
+        return $this->hasMany(BookingItem::class);
+    }
+
+    /**
+     * Get the dinner package for this booking
+     */
+    public function dinnerPackage()
+    {
+        return $this->hasOne(BookingDinnerPackage::class);
+    }
+
+    /**
+     * Generate unique booking code
+     */
+    public static function generateBookingCode()
+    {
+        $date = now()->format('Ymd');
+        $lastBooking = self::whereDate('created_at', now())->latest('id')->first();
+        $sequence = $lastBooking ? (intval(substr($lastBooking->booking_code, -4)) + 1) : 1;
+
+        return 'BK' . $date . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Boot method to auto-generate booking code
+     */
     protected static function boot()
     {
         parent::boot();
@@ -62,107 +110,48 @@ class Booking extends Model
         });
     }
 
-    // Relationships
-    public function customer()
+    /**
+     * Calculate all totals for this booking
+     */
+    public function calculateTotals()
     {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function hall()
-    {
-        return $this->belongsTo(Hall::class);
-    }
-
-    public function bookingItems()
-    {
-        return $this->hasMany(BookingItem::class);
-    }
-
-    public function dinnerPackage()
-    {
-        return $this->hasOne(BookingDinnerPackage::class);
-    }
-
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
-    }
-
-    public function createdBy()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    // Scopes
-    public function scopeUpcoming($query)
-    {
-        return $query->where('event_date', '>=', now()->toDateString())
-            ->whereIn('status', ['confirmed', 'pending']);
-    }
-
-    public function scopeCompleted($query)
-    {
-        return $query->where('status', 'completed');
-    }
-
-    public function scopeCancelled($query)
-    {
-        return $query->where('status', 'cancelled');
-    }
-
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status', $status);
-    }
-
-    public function scopeByDateRange($query, $startDate, $endDate)
-    {
-        return $query->whereBetween('event_date', [$startDate, $endDate]);
-    }
-
-    // Helper Methods
-    public static function generateBookingCode(): string
-    {
-        $year = date('Y');
-        $lastBooking = self::whereYear('created_at', $year)
-            ->orderBy('id', 'desc')
-            ->first();
-
-        if ($lastBooking) {
-            $lastNumber = (int) substr($lastBooking->booking_code, -4);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
+        // 1. Hall Rental Amount
+        if ($this->hall && $this->customer) {
+            $this->hall_rental_amount = $this->customer->customer_type === 'internal'
+                ? $this->hall->rental_rate_internal
+                : $this->hall->rental_rate_external;
         }
 
-        return 'BK' . $year . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-    }
+        // 2. Additional Items Amount
+        $this->additional_items_amount = $this->bookingItems()->sum('total_price');
 
-    public function calculateTotal(): float
-    {
-        $itemsTotal = $this->bookingItems()->sum('subtotal');
-        $packageTotal = $this->dinnerPackage ? $this->dinnerPackage->total_package_amount : 0;
+        // 3. Dinner Package Amount
+        $this->dinner_package_amount = $this->dinnerPackage ? $this->dinnerPackage->total_amount : 0;
 
-        return $itemsTotal + $packageTotal;
-    }
+        // 4. Subtotal
+        $this->subtotal = $this->hall_rental_amount + $this->additional_items_amount + $this->dinner_package_amount;
 
-    public function getRemainingBalance(): float
-    {
-        $totalPaid = $this->payments()->sum('amount');
-        return (float) $this->total_amount - $totalPaid;
-    }
+        // 5. Discount Amount
+        if ($this->discount_percentage > 0) {
+            $this->discount_amount = ($this->subtotal * $this->discount_percentage) / 100;
+        } else {
+            $this->discount_amount = 0;
+        }
 
-    public function needsFiftyPercentPayment(): bool
-    {
-        return $this->booking_type === 'dinner_package'
-            && !$this->fifty_percent_paid
-            && $this->event_date->diffInDays(now()) <= 30;
-    }
+        // 6. After Discount
+        $afterDiscount = $this->subtotal - $this->discount_amount;
 
-    public function needsFullPayment(): bool
-    {
-        $daysBeforeEvent = $this->booking_type === 'dinner_package' ? 14 : 21;
-        return !$this->fully_paid
-            && $this->event_date->diffInDays(now()) <= $daysBeforeEvent;
+        // 7. Tax Amount
+        if ($this->tax_percentage > 0) {
+            $this->tax_amount = ($afterDiscount * $this->tax_percentage) / 100;
+        } else {
+            $this->tax_amount = 0;
+        }
+
+        // 8. Total Amount
+        $this->total_amount = $afterDiscount + $this->tax_amount;
+
+        // 9. Balance Amount
+        $this->balance_amount = $this->total_amount - ($this->deposit_amount ?? 0);
     }
 }

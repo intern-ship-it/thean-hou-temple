@@ -44,6 +44,10 @@ const Login = () => {
     dispatch(clearError());
   }, [dispatch]);
 
+  useEffect(() => {
+    console.log("Current API URL:", import.meta.env.VITE_API_URL);
+    console.log("Is Production?", import.meta.env.PROD);
+  }, []);
   const handleChange = (e) => {
     setFormData({
       ...formData,

@@ -14,41 +14,62 @@ class BookingDinnerPackage extends Model
         'dinner_package_id',
         'catering_vendor_id',
         'number_of_tables',
-        'price_per_table',
-        'total_package_amount',
+        'total_amount',
         'special_menu_requests',
     ];
 
     protected $casts = [
         'number_of_tables' => 'integer',
-        'price_per_table' => 'decimal:2',
-        'total_package_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
     ];
 
-    // Relationships
+    /**
+     * Get the booking that owns this dinner package
+     */
     public function booking()
     {
         return $this->belongsTo(Booking::class);
     }
 
-    public function dinnerPackage()
+    /**
+     * Get the dinner package
+     */
+    public function package()
     {
-        return $this->belongsTo(DinnerPackage::class);
+        return $this->belongsTo(DinnerPackage::class, 'dinner_package_id');
     }
 
-    public function cateringVendor()
+    /**
+     * Get the catering vendor
+     */
+    public function vendor()
     {
-        return $this->belongsTo(CateringVendor::class);
+        return $this->belongsTo(CateringVendor::class, 'catering_vendor_id');
     }
 
-    // Boot
+    /**
+     * Calculate total amount based on package price and number of tables
+     */
+    public function calculateTotal()
+    {
+        if ($this->package) {
+            $this->total_amount = $this->package->price_per_table * $this->number_of_tables;
+        }
+    }
+
+    /**
+     * Boot method to auto-calculate total
+     */
     protected static function boot()
     {
         parent::boot();
 
-        static::saving(function ($packageBooking) {
-            $packageBooking->total_package_amount =
-                $packageBooking->number_of_tables * $packageBooking->price_per_table;
+        static::creating(function ($dinnerPackage) {
+            $dinnerPackage->calculateTotal();
+        });
+
+        static::updating(function ($dinnerPackage) {
+            $dinnerPackage->calculateTotal();
         });
     }
 }

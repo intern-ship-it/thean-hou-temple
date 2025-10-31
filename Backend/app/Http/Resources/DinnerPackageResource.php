@@ -16,7 +16,7 @@ class DinnerPackageResource extends JsonResource
             'price_per_table' => (float) $this->price_per_table,
             'description' => $this->description,
             'minimum_tables' => $this->minimum_tables,
-            'is_active' => $this->is_active,
+            'is_active' => (bool) $this->is_active,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

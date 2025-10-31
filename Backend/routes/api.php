@@ -51,20 +51,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('customers', CustomerController::class);
         Route::get('customers-statistics', [CustomerController::class, 'statistics']);
 
-        // HALLS
-        Route::apiResource('halls', HallController::class)->only(['index', 'show']);
+        // HALLS - FULL CRUD NOW ENABLED
+        Route::apiResource('halls', HallController::class); // Changed from ->only(['index', 'show'])
         Route::post('halls/check-availability', [HallController::class, 'checkAvailability']);
 
         // BILLING ITEMS
-        Route::apiResource('billing-items', BillingItemController::class)->only(['index', 'show']);
+        Route::apiResource('billing-items', BillingItemController::class);
         Route::post('billing-items/get-price', [BillingItemController::class, 'getPrice']);
 
-        // DINNER PACKAGES
-        Route::apiResource('dinner-packages', DinnerPackageController::class)->only(['index', 'show']);
+        //DINNER PACKAGES
+        Route::apiResource('dinner-packages', DinnerPackageController::class); // Full CRUD enabled
         Route::post('dinner-packages/calculate-total', [DinnerPackageController::class, 'calculateTotal']);
 
         // CATERING VENDORS
-        Route::apiResource('catering-vendors', CateringVendorController::class)->only(['index', 'show']);
+        Route::apiResource('catering-vendors', CateringVendorController::class);
 
         // BOOKINGS
         Route::apiResource('bookings', BookingController::class);
@@ -76,6 +76,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('quotations/{quotation}/accept', [QuotationController::class, 'accept']);
 
         // PAYMENTS
-        Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
+        Route::apiResource('payments', PaymentController::class);
     });
 });

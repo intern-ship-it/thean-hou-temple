@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BillingItem extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'item_code',
@@ -21,38 +22,50 @@ class BillingItem extends Model
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
         'internal_price' => 'decimal:2',
         'external_price' => 'decimal:2',
+        'is_active' => 'boolean',
     ];
 
-    // Relationships
-    public function bookingItems()
-    {
-        return $this->hasMany(BookingItem::class);
-    }
-
-    public function quotationItems()
-    {
-        return $this->hasMany(QuotationItem::class);
-    }
-
-    // Scopes
+    /**
+     * Get only active items
+     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
+    /**
+     * Get items by category
+     */
     public function scopeByCategory($query, $category)
     {
         return $query->where('category', $category);
     }
 
-    // Helper Methods
-    public function getPriceForCustomerType($customerType): float
+    /**
+     * Get booking items
+     */
+    public function bookingItems()
     {
-        return $customerType === 'internal'
-            ? (float) $this->internal_price
-            : (float) $this->external_price;
+        return $this->hasMany(BookingItem::class);
+    }
+
+    /**
+     * Get quotation items
+     */
+    public function quotationItems()
+    {
+        return $this->hasMany(QuotationItem::class);
+    }
+
+    /**
+     * Get price based on customer type
+     */
+    public function getPriceForCustomerType(string $customerType): float
+    {
+        return $customerType === 'internal' 
+            ? $this->internal_price 
+            : $this->external_price;
     }
 }
