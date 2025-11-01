@@ -1,6 +1,7 @@
 // src/features/hallBooking/billingItemsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
+import { showToast } from "../../utils/toast"; // ✅ ADDED
 
 // ==================== ASYNC THUNKS ====================
 
@@ -113,29 +114,86 @@ const billingItemsSlice = createSlice({
       .addCase(fetchBillingItems.fulfilled, (state, action) => {
         state.loading = false;
         state.items = action.payload.data;
+        // ✅ NO TOAST ON FETCH SUCCESS (would be annoying)
       })
       .addCase(fetchBillingItems.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Toast on fetch error
+        showToast.error(action.payload || "toast.billing_items.fetch_error");
       })
+
       // Create item
-      .addCase(createBillingItem.fulfilled, (state, action) => {
-        state.items.push(action.payload.data);
+      .addCase(createBillingItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
+      .addCase(createBillingItem.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items.push(action.payload.data);
+        // ✅ ADDED: Success toast with item name
+        showToast.success(
+          "toast.billing_items.add_success",
+          {},
+          {
+            name: action.payload.data.item_name,
+          }
+        );
+      })
+      .addCase(createBillingItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.billing_items.add_error");
+      })
+
       // Update item
+      .addCase(updateBillingItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateBillingItem.fulfilled, (state, action) => {
+        state.loading = false;
         const index = state.items.findIndex(
           (item) => item.id === action.payload.data.id
         );
         if (index !== -1) {
           state.items[index] = action.payload.data;
         }
+        // ✅ ADDED: Success toast with item name
+        showToast.success(
+          "toast.billing_items.update_success",
+          {},
+          {
+            name: action.payload.data.item_name,
+          }
+        );
       })
+      .addCase(updateBillingItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.billing_items.update_error");
+      })
+
       // Delete item
+      .addCase(deleteBillingItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(deleteBillingItem.fulfilled, (state, action) => {
+        state.loading = false;
         state.items = state.items.filter(
           (item) => item.id !== action.payload.id
         );
+        // ✅ ADDED: Success toast
+        showToast.success("toast.billing_items.delete_success");
+      })
+      .addCase(deleteBillingItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.billing_items.delete_error");
       });
   },
 });

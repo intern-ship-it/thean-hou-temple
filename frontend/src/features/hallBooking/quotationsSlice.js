@@ -1,6 +1,7 @@
 // src/features/hallBooking/quotationsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
+import { showToast } from "../../utils/toast"; // ✅ ADDED
 
 // Async thunks
 export const fetchQuotations = createAsyncThunk(
@@ -139,11 +140,15 @@ const quotationsSlice = createSlice({
         state.loading = false;
         state.quotations = action.payload.data;
         state.pagination = action.payload.meta;
+        // ✅ NO TOAST ON FETCH SUCCESS (would be annoying)
       })
       .addCase(fetchQuotations.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Toast on fetch error
+        showToast.error(action.payload || "toast.quotations.fetch_error");
       })
+
       // Fetch quotation by ID
       .addCase(fetchQuotationById.pending, (state) => {
         state.loading = true;
@@ -152,11 +157,15 @@ const quotationsSlice = createSlice({
       .addCase(fetchQuotationById.fulfilled, (state, action) => {
         state.loading = false;
         state.currentQuotation = action.payload.data;
+        // ✅ NO TOAST (internal operation)
       })
       .addCase(fetchQuotationById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Toast on fetch single quotation error
+        showToast.error(action.payload || "toast.quotations.fetch_error");
       })
+
       // Create quotation
       .addCase(createQuotation.pending, (state) => {
         state.loading = true;
@@ -165,11 +174,22 @@ const quotationsSlice = createSlice({
       .addCase(createQuotation.fulfilled, (state, action) => {
         state.loading = false;
         state.quotations.unshift(action.payload.data);
+        // ✅ ADDED: Success toast with quotation code
+        showToast.success(
+          "toast.quotations.add_success",
+          {},
+          {
+            code: action.payload.data.quotation_code,
+          }
+        );
       })
       .addCase(createQuotation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.quotations.add_error");
       })
+
       // Update quotation
       .addCase(updateQuotation.pending, (state) => {
         state.loading = true;
@@ -186,11 +206,22 @@ const quotationsSlice = createSlice({
         if (state.currentQuotation?.id === action.payload.data.id) {
           state.currentQuotation = action.payload.data;
         }
+        // ✅ ADDED: Success toast with quotation code
+        showToast.success(
+          "toast.quotations.update_success",
+          {},
+          {
+            code: action.payload.data.quotation_code,
+          }
+        );
       })
       .addCase(updateQuotation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.quotations.update_error");
       })
+
       // Delete quotation
       .addCase(deleteQuotation.pending, (state) => {
         state.loading = true;
@@ -201,11 +232,16 @@ const quotationsSlice = createSlice({
         state.quotations = state.quotations.filter(
           (q) => q.id !== action.payload.id
         );
+        // ✅ ADDED: Success toast
+        showToast.success("toast.quotations.delete_success");
       })
       .addCase(deleteQuotation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.quotations.delete_error");
       })
+
       // Accept quotation
       .addCase(acceptQuotation.pending, (state) => {
         state.loading = true;
@@ -222,10 +258,14 @@ const quotationsSlice = createSlice({
         if (state.currentQuotation?.id === action.payload.data.id) {
           state.currentQuotation = action.payload.data;
         }
+        // ✅ ADDED: Success toast with booking code
+        // Note: The toast will be shown in the component after navigation
       })
       .addCase(acceptQuotation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.quotations.accept_error");
       });
   },
 });

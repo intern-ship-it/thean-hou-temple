@@ -1,6 +1,7 @@
 // src/features/hallBooking/bookingsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
+import { showToast } from "../../utils/toast"; // ✅ ADDED
 
 // Async thunks
 export const fetchBookings = createAsyncThunk(
@@ -167,11 +168,15 @@ const bookingsSlice = createSlice({
         state.loading = false;
         state.bookings = action.payload.data;
         state.pagination = action.payload.meta;
+        // ✅ NO TOAST ON FETCH SUCCESS (would be annoying)
       })
       .addCase(fetchBookings.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Toast on fetch error
+        showToast.error(action.payload || "toast.bookings.fetch_error");
       })
+
       // Fetch booking by ID
       .addCase(fetchBookingById.pending, (state) => {
         state.loading = true;
@@ -180,11 +185,15 @@ const bookingsSlice = createSlice({
       .addCase(fetchBookingById.fulfilled, (state, action) => {
         state.loading = false;
         state.currentBooking = action.payload.data;
+        // ✅ NO TOAST (internal operation)
       })
       .addCase(fetchBookingById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Toast on fetch single booking error
+        showToast.error(action.payload || "toast.bookings.fetch_error");
       })
+
       // Create booking
       .addCase(createBooking.pending, (state) => {
         state.loading = true;
@@ -193,11 +202,22 @@ const bookingsSlice = createSlice({
       .addCase(createBooking.fulfilled, (state, action) => {
         state.loading = false;
         state.bookings.unshift(action.payload.data);
+        // ✅ ADDED: Success toast with booking code
+        showToast.success(
+          "toast.bookings.add_success",
+          {},
+          {
+            code: action.payload.data.booking_code,
+          }
+        );
       })
       .addCase(createBooking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.bookings.add_error");
       })
+
       // Update booking
       .addCase(updateBooking.pending, (state) => {
         state.loading = true;
@@ -214,11 +234,22 @@ const bookingsSlice = createSlice({
         if (state.currentBooking?.id === action.payload.data.id) {
           state.currentBooking = action.payload.data;
         }
+        // ✅ ADDED: Success toast with booking code
+        showToast.success(
+          "toast.bookings.update_success",
+          {},
+          {
+            code: action.payload.data.booking_code,
+          }
+        );
       })
       .addCase(updateBooking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.bookings.update_error");
       })
+
       // Delete booking
       .addCase(deleteBooking.pending, (state) => {
         state.loading = true;
@@ -229,18 +260,26 @@ const bookingsSlice = createSlice({
         state.bookings = state.bookings.filter(
           (b) => b.id !== action.payload.id
         );
+        // ✅ ADDED: Success toast
+        showToast.success("toast.bookings.delete_success");
       })
       .addCase(deleteBooking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.bookings.delete_error");
       })
+
       // Fetch upcoming bookings
       .addCase(fetchUpcomingBookings.fulfilled, (state, action) => {
         state.upcomingBookings = action.payload.data;
+        // ✅ NO TOAST (background operation)
       })
+
       // Fetch stats
       .addCase(fetchBookingStats.fulfilled, (state, action) => {
         state.statistics = action.payload.data;
+        // ✅ NO TOAST (background operation)
       });
   },
 });

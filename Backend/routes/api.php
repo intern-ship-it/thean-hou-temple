@@ -69,6 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // BOOKINGS
         Route::apiResource('bookings', BookingController::class);
         Route::get('bookings-upcoming', [BookingController::class, 'upcoming']);
+        
         Route::get('bookings-statistics', [BookingController::class, 'statistics']);
 
         // QUOTATIONS

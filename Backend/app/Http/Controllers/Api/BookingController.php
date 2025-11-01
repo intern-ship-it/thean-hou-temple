@@ -16,49 +16,28 @@ class BookingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Booking::with([
-            'customer',
-            'hall',
-            'bookingItems.billingItem',
-            'dinnerPackage.package',
-            'dinnerPackage.vendor'
+        $query = Booking::with(['customer', 'hall']);
+
+        // Filter by year and month if provided
+        if ($request->has('year') && $request->has('month')) {
+            $year = $request->input('year');
+            $month = $request->input('month');
+
+            $query->whereYear('event_date', $year)
+                ->whereMonth('event_date', $month);
+        }
+
+        // Other filters (status, etc.)
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $bookings = $query->orderBy('event_date', 'asc')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => BookingResource::collection($bookings)
         ]);
-
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Filter by date range
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('event_date', [
-                $request->start_date,
-                $request->end_date
-            ]);
-        }
-
-        // Filter by customer
-        if ($request->filled('customer_id')) {
-            $query->where('customer_id', $request->customer_id);
-        }
-
-        // Filter by hall
-        if ($request->filled('hall_id')) {
-            $query->where('hall_id', $request->hall_id);
-        }
-
-        // Search by booking code
-        if ($request->filled('search')) {
-            $query->where('booking_code', 'like', '%' . $request->search . '%');
-        }
-
-        // Order by event date descending
-        $query->orderBy('event_date', 'desc');
-
-        $perPage = $request->input('per_page', 15);
-        $bookings = $query->paginate($perPage);
-
-        return BookingResource::collection($bookings);
     }
 
     /**

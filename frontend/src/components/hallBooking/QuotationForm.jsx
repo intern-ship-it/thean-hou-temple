@@ -60,13 +60,15 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
 
       if (quotation.quotation_items) {
         setSelectedItems(
-          quotation.quotation_items.map((item) => ({
-            billing_item_id: item.billing_item.id,
-            item_name: item.billing_item.item_name,
-            quantity: item.quantity,
-            unit_price: item.unit_price,
-            remarks: item.remarks || "",
-          }))
+          quotation.quotation_items
+            .filter((item) => item.billing_item !== null) // ✅ ADD THIS
+            .map((item) => ({
+              billing_item_id: item.billing_item.id,
+              item_name: item.billing_item.item_name,
+              quantity: item.quantity,
+              unit_price: item.unit_price,
+              remarks: item.remarks || "",
+            }))
         );
       }
     }

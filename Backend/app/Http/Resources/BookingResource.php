@@ -110,7 +110,7 @@ class BookingResource extends JsonResource
                         'vendor_type' => $this->dinnerPackage->vendor->vendor_type,
                     ] : null,
                     'number_of_tables' => $this->dinnerPackage->number_of_tables,
-                    'total_amount' => $this->dinnerPackage->total_amount,
+                    'total_amount' => $this->dinnerPackage->total_package_amount,
                     'special_menu_requests' => $this->dinnerPackage->special_menu_requests,
                 ];
             }),

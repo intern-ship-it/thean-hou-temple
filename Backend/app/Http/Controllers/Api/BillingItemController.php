@@ -107,6 +107,9 @@ class BillingItemController extends Controller
     /**
      * Remove the specified billing item
      */
+    /**
+     * Remove the specified billing item
+     */
     public function destroy(BillingItem $billingItem): JsonResponse
     {
         // Check if used in bookings or quotations
@@ -117,14 +120,13 @@ class BillingItemController extends Controller
             ], 422);
         }
 
-        $billingItem->delete();
+        $billingItem->delete(); // This will now HARD DELETE (permanently remove)
 
         return response()->json([
             'success' => true,
             'message' => 'Billing item deleted successfully',
         ]);
     }
-
     /**
      * Get price for specific customer type
      */

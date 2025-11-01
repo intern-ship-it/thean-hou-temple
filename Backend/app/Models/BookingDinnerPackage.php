@@ -14,13 +14,15 @@ class BookingDinnerPackage extends Model
         'dinner_package_id',
         'catering_vendor_id',
         'number_of_tables',
-        'total_amount',
+        'price_per_table',
+        'total_package_amount', // ← CHANGED FROM total_amount
         'special_menu_requests',
     ];
 
     protected $casts = [
         'number_of_tables' => 'integer',
-        'total_amount' => 'decimal:2',
+        'price_per_table' => 'decimal:2',
+        'total_package_amount' => 'decimal:2', // ← CHANGED FROM total_amount
     ];
 
     /**
@@ -53,7 +55,8 @@ class BookingDinnerPackage extends Model
     public function calculateTotal()
     {
         if ($this->package) {
-            $this->total_amount = $this->package->price_per_table * $this->number_of_tables;
+            $this->price_per_table = $this->package->price_per_table;
+            $this->total_package_amount = $this->price_per_table * $this->number_of_tables;
         }
     }
 

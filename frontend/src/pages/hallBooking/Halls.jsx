@@ -1,7 +1,12 @@
 // src/pages/hallBooking/Halls.jsx
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchHalls } from "../../features/hallBooking/hallsSlice";
+import {
+  fetchHalls,
+  createHall, // ✅ ADD
+  updateHall, // ✅ ADD
+  deleteHall, // ✅ ADD
+} from "../../features/hallBooking/hallsSlice";
 import HallsTable from "../../components/hallBooking/HallsTable";
 import HallForm from "../../components/hallBooking/HallForm";
 import {
@@ -16,7 +21,7 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-import api from "../../services/api";
+// import api from "../../services/api";
 
 const Halls = () => {
   const dispatch = useDispatch();
@@ -69,39 +74,39 @@ const Halls = () => {
 
   const confirmDelete = async () => {
     if (hallToDelete) {
-      setDeleteLoading(true);
       try {
-        await api.delete(`/hall-booking/halls/${hallToDelete.id}`);
+        await dispatch(deleteHall(hallToDelete.id)).unwrap(); // ✅ USE REDUX THUNK
         setShowDeleteConfirm(false);
         setHallToDelete(null);
-        dispatch(fetchHalls());
+        // ✅ NO NEED TO REFETCH - reducer updates state automatically
+        // ✅ NO NEED TO SET ERROR - toast handles it
       } catch (err) {
-        setLocalError(err.response?.data?.message || "Failed to delete hall");
-      } finally {
-        setDeleteLoading(false);
+        console.error("Failed to delete hall:", err);
+        // Toast already shows error from slice
       }
     }
   };
 
-  const handleFormSubmit = async (formData) => {
-    setFormLoading(true);
-    setLocalError(null);
+const handleFormSubmit = async (formData) => {
+  setFormLoading(true);
+  setLocalError(null);
 
-    try {
-      if (selectedHall) {
-        await api.put(`/hall-booking/halls/${selectedHall.id}`, formData);
-      } else {
-        await api.post("/hall-booking/halls", formData);
-      }
-      setShowForm(false);
-      setSelectedHall(null);
-      dispatch(fetchHalls());
-    } catch (err) {
-      setLocalError(err.response?.data?.message || "Failed to save hall");
-    } finally {
-      setFormLoading(false);
+  try {
+    if (selectedHall) {
+      await dispatch(
+        updateHall({ id: selectedHall.id, data: formData })
+      ).unwrap();
+    } else {
+      await dispatch(createHall(formData)).unwrap();
     }
-  };
+    setShowForm(false);
+    setSelectedHall(null);
+  } catch (err) {
+    console.error("Failed to save hall:", err);
+  } finally {
+    setFormLoading(false);
+  }
+};
 
   return (
     <div className="space-y-6">

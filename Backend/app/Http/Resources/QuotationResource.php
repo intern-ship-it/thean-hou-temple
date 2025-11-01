@@ -40,7 +40,7 @@ class QuotationResource extends JsonResource
                 return $this->quotationItems->map(function ($item) {
                     return [
                         'id' => $item->id,
-                        'billing_item' => new BillingItemResource($item->billingItem),
+                        'billing_item' => $item->billingItem ? new BillingItemResource($item->billingItem) : null,
                         'quantity' => $item->quantity,
                         'unit_price' => (float) $item->unit_price,
                         'subtotal' => (float) $item->subtotal,

@@ -83,6 +83,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       roles: ["super_admin"],
     },
     {
+      name: t("sidebar.halls"), // ✅ ADDED
+      href: "/hall/halls",
+      icon: Building2,
+      roles: ["super_admin"],
+    },
+    {
       name: t("sidebar.dinner_packages"), // CHANGED from "Dinner Packages"
       href: "/hall/dinner-packages",
       icon: Utensils,

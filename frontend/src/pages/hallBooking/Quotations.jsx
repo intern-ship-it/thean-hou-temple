@@ -29,7 +29,7 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-
+import { showToast } from "../../utils/toast";
 const Quotations = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -119,25 +119,35 @@ const Quotations = () => {
     setShowAcceptConfirm(true);
   };
 
-  const confirmAccept = async () => {
-    if (quotationToAccept) {
-      try {
-        const result = await dispatch(
-          acceptQuotation(quotationToAccept.id)
-        ).unwrap();
-        setShowAcceptConfirm(false);
-        setQuotationToAccept(null);
+ const confirmAccept = async () => {
+   if (quotationToAccept) {
+     try {
+       const result = await dispatch(
+         acceptQuotation(quotationToAccept.id)
+       ).unwrap();
+       setShowAcceptConfirm(false);
+       setQuotationToAccept(null);
 
-        // Show success message and navigate to bookings
-        alert(
-          `Quotation accepted! Booking ${result.data.booking_code} created successfully.`
-        );
-        navigate("/hall/bookings");
-      } catch (err) {
-        console.error("Failed to accept quotation:", err);
-      }
-    }
-  };
+       // ✅ REPLACED: Old code was alert(`Quotation accepted! Booking ${result.data.booking_code} created successfully.`);
+       // ✅ NEW: Use toast instead
+       showToast.success(
+         "toast.quotations.accept_success",
+         {},
+         {
+           code: result.data.booking_code,
+         }
+       );
+
+       // Small delay before navigation so user can see the toast
+       setTimeout(() => {
+         navigate("/hall/bookings");
+       }, 500);
+     } catch (err) {
+       console.error("Failed to accept quotation:", err);
+       // Error toast is already shown by the slice
+     }
+   }
+ };
 
   const handleFormSubmit = async (formData) => {
     try {

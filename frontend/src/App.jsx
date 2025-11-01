@@ -28,7 +28,9 @@ import Halls from "./pages/hallBooking/Halls";
 import BillingItems from "./pages/hallBooking/BillingItems"; // ADD THIS
 import DinnerPackages from "./pages/hallBooking/DinnerPackages"; // ADD THIS
 import CateringVendors from "./pages/hallBooking/CateringVendors"; // WE'LL CREATE THIS
-
+import CreateBooking from "./pages/hallBooking/CreateBooking"; // ← ADD THIS
+import EditBooking from "./pages/hallBooking/EditBooking"; 
+import BookingCalendarPage from "./pages/hallBooking/BookingCalendarPage";   
 // Placeholder Pages
 const PagodaLightsPage = () => (
   <div className="bg-white rounded-xl shadow-md p-8">
@@ -135,6 +137,32 @@ function App() {
               element={
                 <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
                   <Bookings />
+                </ProtectedRoute>
+              }
+            />
+            {/* ==================== CALENDAR PAGE ==================== */}
+            <Route
+              path="hall/bookings/calendar"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
+                  <BookingCalendarPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* ← ADD THESE TWO ROUTES */}
+            <Route
+              path="hall/bookings/create"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
+                  <CreateBooking />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="hall/bookings/edit/:id"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
+                  <EditBooking />
                 </ProtectedRoute>
               }
             />

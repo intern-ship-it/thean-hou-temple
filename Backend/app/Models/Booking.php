@@ -127,7 +127,6 @@ class Booking extends Model
 
         // 3. Dinner Package Amount
         $this->dinner_package_amount = $this->dinnerPackage ? $this->dinnerPackage->total_amount : 0;
-
         // 4. Subtotal
         $this->subtotal = $this->hall_rental_amount + $this->additional_items_amount + $this->dinner_package_amount;
 

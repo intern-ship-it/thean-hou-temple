@@ -1,6 +1,7 @@
 // src/features/hallBooking/cateringVendorsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
+import { showToast } from "../../utils/toast"; // ✅ ADDED
 
 // ==================== ASYNC THUNKS ====================
 
@@ -101,28 +102,89 @@ const cateringVendorsSlice = createSlice({
       .addCase(fetchCateringVendors.fulfilled, (state, action) => {
         state.loading = false;
         state.vendors = action.payload.data;
+        // ✅ NO TOAST ON FETCH SUCCESS (would be annoying)
       })
       .addCase(fetchCateringVendors.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Toast on fetch error
+        showToast.error(action.payload || "toast.catering_vendors.fetch_error");
       })
+
       // Create vendor
-      .addCase(createCateringVendor.fulfilled, (state, action) => {
-        state.vendors.push(action.payload.data);
+      .addCase(createCateringVendor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
+      .addCase(createCateringVendor.fulfilled, (state, action) => {
+        state.loading = false;
+        state.vendors.push(action.payload.data);
+        // ✅ ADDED: Success toast with vendor name
+        showToast.success(
+          "toast.catering_vendors.add_success",
+          {},
+          {
+            name: action.payload.data.vendor_name,
+          }
+        );
+      })
+      .addCase(createCateringVendor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.catering_vendors.add_error");
+      })
+
       // Update vendor
+      .addCase(updateCateringVendor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateCateringVendor.fulfilled, (state, action) => {
+        state.loading = false;
         const index = state.vendors.findIndex(
           (vendor) => vendor.id === action.payload.data.id
         );
         if (index !== -1) {
           state.vendors[index] = action.payload.data;
         }
+        // ✅ ADDED: Success toast with vendor name
+        showToast.success(
+          "toast.catering_vendors.update_success",
+          {},
+          {
+            name: action.payload.data.vendor_name,
+          }
+        );
       })
+      .addCase(updateCateringVendor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(
+          action.payload || "toast.catering_vendors.update_error"
+        );
+      })
+
       // Delete vendor
+      .addCase(deleteCateringVendor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(deleteCateringVendor.fulfilled, (state, action) => {
+        state.loading = false;
         state.vendors = state.vendors.filter(
           (vendor) => vendor.id !== action.payload.id
+        );
+        // ✅ ADDED: Success toast
+        showToast.success("toast.catering_vendors.delete_success");
+      })
+      .addCase(deleteCateringVendor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(
+          action.payload || "toast.catering_vendors.delete_error"
         );
       });
   },

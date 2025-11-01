@@ -1,6 +1,7 @@
 // src/features/hallBooking/dinnerPackagesSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
+import { showToast } from "../../utils/toast"; // ✅ ADDED
 
 // ==================== ASYNC THUNKS ====================
 
@@ -119,33 +120,92 @@ const dinnerPackagesSlice = createSlice({
       .addCase(fetchDinnerPackages.fulfilled, (state, action) => {
         state.loading = false;
         state.packages = action.payload.data;
+        // ✅ NO TOAST ON FETCH SUCCESS (would be annoying)
       })
       .addCase(fetchDinnerPackages.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        // ✅ ADDED: Toast on fetch error
+        showToast.error(action.payload || "toast.dinner_packages.fetch_error");
       })
+
       // Create package
-      .addCase(createDinnerPackage.fulfilled, (state, action) => {
-        state.packages.push(action.payload.data);
+      .addCase(createDinnerPackage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
+      .addCase(createDinnerPackage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.packages.push(action.payload.data);
+        // ✅ ADDED: Success toast with package name
+        showToast.success(
+          "toast.dinner_packages.add_success",
+          {},
+          {
+            name: action.payload.data.package_name,
+          }
+        );
+      })
+      .addCase(createDinnerPackage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.dinner_packages.add_error");
+      })
+
       // Update package
+      .addCase(updateDinnerPackage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateDinnerPackage.fulfilled, (state, action) => {
+        state.loading = false;
         const index = state.packages.findIndex(
           (pkg) => pkg.id === action.payload.data.id
         );
         if (index !== -1) {
           state.packages[index] = action.payload.data;
         }
+        // ✅ ADDED: Success toast with package name
+        showToast.success(
+          "toast.dinner_packages.update_success",
+          {},
+          {
+            name: action.payload.data.package_name,
+          }
+        );
       })
+      .addCase(updateDinnerPackage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.dinner_packages.update_error");
+      })
+
       // Delete package
+      .addCase(deleteDinnerPackage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(deleteDinnerPackage.fulfilled, (state, action) => {
+        state.loading = false;
         state.packages = state.packages.filter(
           (pkg) => pkg.id !== action.payload.id
         );
+        // ✅ ADDED: Success toast
+        showToast.success("toast.dinner_packages.delete_success");
       })
+      .addCase(deleteDinnerPackage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // ✅ ADDED: Error toast
+        showToast.error(action.payload || "toast.dinner_packages.delete_error");
+      })
+
       // Calculate total
       .addCase(calculateTotal.fulfilled, (state, action) => {
         state.calculatedTotal = action.payload.data;
+        // ✅ NO TOAST (internal calculation)
       });
   },
 });

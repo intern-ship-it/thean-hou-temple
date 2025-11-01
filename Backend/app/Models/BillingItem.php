@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// REMOVE: use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BillingItem extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory; // REMOVED SoftDeletes
 
     protected $fillable = [
         'item_code',
@@ -64,8 +64,8 @@ class BillingItem extends Model
      */
     public function getPriceForCustomerType(string $customerType): float
     {
-        return $customerType === 'internal' 
-            ? $this->internal_price 
+        return $customerType === 'internal'
+            ? $this->internal_price
             : $this->external_price;
     }
 }
