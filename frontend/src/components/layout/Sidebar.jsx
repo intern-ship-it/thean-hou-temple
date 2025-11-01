@@ -3,6 +3,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Home,
   Users,
@@ -23,25 +24,26 @@ import {
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
+  const { t } = useTranslation();
 
   const navigation = [
-    { name: "Dashboard", href: "/", icon: Home, roles: ["all"] },
+    { name: t("sidebar.dashboard"), href: "/", icon: Home, roles: ["all"] }, // CHANGED
 
     // Temple Operations
     {
-      name: "Devotees",
+      name: t("sidebar.devotees"), // CHANGED
       href: "/temple/devotees",
       icon: Users,
       roles: ["super_admin", "temple_staff"],
     },
     {
-      name: "Pagoda Lights",
+      name: t("sidebar.pagoda_lights"), // CHANGED
       href: "/temple/pagoda-lights",
       icon: Lightbulb,
       roles: ["super_admin", "temple_staff"],
     },
     {
-      name: "Donations",
+      name: t("sidebar.donations"), // CHANGED
       href: "/temple/donations",
       icon: DollarSign,
       roles: ["super_admin", "temple_staff"],
@@ -49,19 +51,19 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // Hall Booking
     {
-      name: "Customers",
+      name: t("sidebar.customers"), // CHANGED
       href: "/hall/customers",
       icon: Users,
       roles: ["super_admin", "hall_manager"],
     },
     {
-      name: "Bookings",
+      name: t("sidebar.bookings"), // CHANGED
       href: "/hall/bookings",
       icon: Calendar,
       roles: ["super_admin", "hall_manager"],
     },
     {
-      name: "Quotations",
+      name: t("sidebar.quotations"), // CHANGED
       href: "/hall/quotations",
       icon: FileText,
       roles: ["super_admin", "hall_manager"],
@@ -71,29 +73,23 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     // ==========================================
     {
       type: "header",
-      label: "🔧 MASTER SETUP",
+      label: t("sidebar.system"), // CHANGED from "🔧 MASTER SETUP"
       roles: ["super_admin"],
     },
     {
-      name: "Halls Master",
-      href: "/hall/halls",
-      icon: Building2,
-      roles: ["super_admin"],
-    },
-    {
-      name: "Billing Items",
+      name: t("sidebar.billing_items"), // CHANGED from "Billing Items"
       href: "/hall/billing-items",
       icon: Package,
       roles: ["super_admin"],
     },
     {
-      name: "Dinner Packages",
+      name: t("sidebar.dinner_packages"), // CHANGED from "Dinner Packages"
       href: "/hall/dinner-packages",
       icon: Utensils,
       roles: ["super_admin"],
     },
     {
-      name: "Catering Vendors",
+      name: t("sidebar.catering_vendors"), // CHANGED from "Catering Vendors"
       href: "/hall/catering-vendors",
       icon: ChefHat,
       roles: ["super_admin"],
@@ -101,18 +97,18 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     // Settings
     { type: "divider" },
     {
-      name: "Settings",
+      name: t("sidebar.settings"), // CHANGED
       href: "/settings",
       icon: Settings,
-      roles: ["super_admin"],
+      roles: ["all"],
     },
   ];
 
- const canAccess = (roles) => {
-   if (!roles) return true; // Items without roles are accessible to all
-   if (roles.includes("all")) return true;
-   return roles.includes(user?.role);
- };
+  const canAccess = (roles) => {
+    if (!roles) return true; // Items without roles are accessible to all
+    if (roles.includes("all")) return true;
+    return roles.includes(user?.role);
+  };
 
   const isActive = (href) => {
     return location.pathname === href;
@@ -206,11 +202,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 >
                   <div className="flex items-center space-x-2">
                     <div>
-                      <h1 className="text-base font-bold text-amber-300 tracking-wide">
-                        天后宮
+                      <h1 className="text-base font-bold text-amber-300   tracking-wide">
+                        {t("sidebar.temple_name")}
                       </h1>
                       <p className="text-xs text-amber-200 font-medium">
-                        Thean Hou Temple
+                        {t("sidebar.temple_name_chinese")}
                       </p>
                     </div>
                     <motion.div
@@ -405,9 +401,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
                 {/* User Details */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-amber-100 truncate">
-                    {user.name}
-                  </p>
+                  <p className="text-sm font-bold text-amber-100 truncate">{user.name}</p>
                   <p className="text-xs text-amber-300 truncate capitalize flex items-center">
                     <span className="inline-block w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
                     {user.role?.replace("_", " ")}

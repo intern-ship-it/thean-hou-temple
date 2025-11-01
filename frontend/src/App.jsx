@@ -1,8 +1,10 @@
 // src/App.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./styles/toast.css";
 // Layout
 import MainLayout from "./components/layout/MainLayout";
 
@@ -30,27 +32,21 @@ import CateringVendors from "./pages/hallBooking/CateringVendors"; // WE'LL CREA
 // Placeholder Pages
 const PagodaLightsPage = () => (
   <div className="bg-white rounded-xl shadow-md p-8">
-    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-      Pagoda Lights Management
-    </h2>
+    <h2 className="text-2xl font-bold text-gray-900 mb-4">Pagoda Lights Management</h2>
     <p className="text-gray-600">Pagoda Lights page coming soon...</p>
   </div>
 );
 
 const DonationsPage = () => (
   <div className="bg-white rounded-xl shadow-md p-8">
-    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-      Donations Management
-    </h2>
+    <h2 className="text-2xl font-bold text-gray-900 mb-4">Donations Management</h2>
     <p className="text-gray-600">Donations page coming soon...</p>
   </div>
 );
 
 const PaymentsPage = () => (
   <div className="bg-white rounded-xl shadow-md p-8">
-    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-      Payments Management
-    </h2>
+    <h2 className="text-2xl font-bold text-gray-900 mb-4">Payments Management</h2>
     <p className="text-gray-600">Payments page coming soon...</p>
   </div>
 );
@@ -67,130 +63,158 @@ const AuthRedirect = ({ children }) => {
 };
 
 function App() {
+  const currentLanguage = useSelector((state) => state.language.currentLanguage);
+
+  // Update document language when language changes
+  useEffect(() => {
+    document.documentElement.lang = currentLanguage;
+  }, [currentLanguage]);
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route
-          path="/login"
-          element={
-            <AuthRedirect>
-              <Login />
-            </AuthRedirect>
-          }
-        />
-
-        {/* Protected Routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
-          {/* Dashboard */}
-          <Route index element={<Dashboard />} />
-
-          {/* ==================== TEMPLE OPERATIONS ==================== */}
+    <>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
           <Route
-            path="temple/devotees"
+            path="/login"
             element={
-              <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
-                <Devotees />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="temple/pagoda-lights"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
-                <PagodaLightsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="temple/donations"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
-                <DonationsPage />
-              </ProtectedRoute>
+              <AuthRedirect>
+                <Login />
+              </AuthRedirect>
             }
           />
 
-          {/* ==================== HALL BOOKING - OPERATIONAL ==================== */}
+          {/* Protected Routes */}
           <Route
-            path="hall/customers"
+            path="/"
             element={
-              <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
-                <Customers />
+              <ProtectedRoute>
+                <MainLayout />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path="hall/bookings"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
-                <Bookings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="hall/quotations"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
-                <Quotations />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="hall/payments"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
-                <PaymentsPage />
-              </ProtectedRoute>
-            }
-          />
+          >
+            {/* Dashboard */}
+            <Route index element={<Dashboard />} />
 
-          {/* ==================== HALL BOOKING - MASTER SETUP ==================== */}
-          <Route
-            path="hall/halls"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin"]}>
-                <Halls />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="hall/billing-items"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin"]}>
-                <BillingItems />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="hall/dinner-packages"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin"]}>
-                <DinnerPackages />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="hall/catering-vendors"
-            element={
-              <ProtectedRoute requiredRoles={["super_admin"]}>
-                <CateringVendors />
-              </ProtectedRoute>
-            }
-          />
+            {/* ==================== TEMPLE OPERATIONS ==================== */}
+            <Route
+              path="temple/devotees"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
+                  <Devotees />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="temple/pagoda-lights"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
+                  <PagodaLightsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="temple/donations"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "temple_staff"]}>
+                  <DonationsPage />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Catch all - redirect to dashboard */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+            {/* ==================== HALL BOOKING - OPERATIONAL ==================== */}
+            <Route
+              path="hall/customers"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
+                  <Customers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="hall/bookings"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
+                  <Bookings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="hall/quotations"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
+                  <Quotations />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="hall/payments"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin", "hall_manager"]}>
+                  <PaymentsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ==================== HALL BOOKING - MASTER SETUP ==================== */}
+            <Route
+              path="hall/halls"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin"]}>
+                  <Halls />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="hall/billing-items"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin"]}>
+                  <BillingItems />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="hall/dinner-packages"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin"]}>
+                  <DinnerPackages />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="hall/catering-vendors"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin"]}>
+                  <CateringVendors />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Catch all - redirect to dashboard */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+
+      {/* Toast Container with Custom Styling */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={currentLanguage === "zh"} // RTL support for Chinese if needed
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        style={{
+          fontFamily:
+            currentLanguage === "zh"
+              ? "'Noto Sans SC', sans-serif"
+              : "'Inter', sans-serif",
+        }}
+      />
+    </>
   );
 }
 

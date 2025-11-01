@@ -32,10 +32,11 @@
     "temple_staff": "Temple Staff",
     "hall_manager": "Hall Manager",
     "staff": "Staff",
+    "accountant": "Accountant",
+    "member": "Member",
     "online": "Online",
     "offline": "Offline"
   },
-
   "dashboard": {
     "blessed_day": "Blessed Day",
     "welcome": "Welcome back, {{name}}!",
@@ -177,5 +178,167 @@
     "booking_message": "Wedding hall booking confirmed",
     "monthly_report": "Monthly Report",
     "report_message": "{{month}} report is ready"
+  },
+  "devotees_page": {
+    "title": "Devotees Management",
+    "subtitle": "Manage temple devotees and their information",
+    "total_devotees": "Total Devotees",
+    "search_devotees": "Search devotees...",
+    "search_placeholder": "Search devotees...",
+    "add_devotee": "Add Devotee",
+    "edit_devotee": "Edit Devotee",
+    "view_devotee": "View Devotee",
+    "delete_devotee": "Delete Devotee",
+    "devotee_details": "Devotee Details",
+    "refresh": "Refresh",
+    "import": "Import",
+    "no_devotees_found": "No Devotees Found",
+    "start_by_adding": "Start by adding your first devotee to the system",
+    "code": "Code",
+    "name": "Name",
+    "name_chinese": "Chinese Name",
+    "ic_number": "IC Number",
+    "contact": "Contact",
+    "city": "City",
+    "loading": "Loading devotees..."
+  },
+  "customers_page": {
+    "title": "Customers Management",
+    "subtitle": "Manage hall booking customers",
+    "add_customer": "Add Customer",
+    "edit_customer": "Edit Customer",
+    "view_customer": "View Customer",
+    "delete_customer": "Delete Customer",
+    "internal": "Internal",
+    "external": "External",
+    "all_customers": "All Customers",
+    "customer_details": "Customer Details",
+    "customer_type": "Customer Type",
+    "ic_number": "IC/NRIC",
+    "address": "Address",
+    "city": "City",
+    "state": "State",
+    "postcode": "Postcode",
+    "company_name": "Company Name"
+  },
+  "bookings_page": {
+    "title": "Hall Bookings",
+    "subtitle": "Manage hall and event bookings",
+    "add_booking": "New Booking",
+    "edit_booking": "Edit Booking",
+    "view_booking": "View Booking",
+    "delete_booking": "Cancel Booking",
+    "booking_details": "Booking Details",
+    "event_details": "Event Details",
+    "time_slot": "Time Slot",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "full_day": "Full Day",
+    "number_of_guests": "Number of Guests",
+    "special_requests": "Special Requests"
+  },
+  "quotations_page": {
+    "title": "Quotations",
+    "subtitle": "Create and manage quotations",
+    "add_quotation": "Create Quotation",
+    "edit_quotation": "Edit Quotation",
+    "view_quotation": "View Quotation",
+    "delete_quotation": "Delete Quotation",
+    "quotation_details": "Quotation Details",
+    "quotation_type": "Quotation Type",
+    "standard": "Standard",
+    "package": "Package",
+    "items": "Items",
+    "add_item": "Add Item",
+    "quantity": "Quantity",
+    "unit_price": "Unit Price",
+    "subtotal": "Subtotal",
+    "grand_total": "Grand Total"
+  },
+  "toast": {
+    "loading": "Processing...",
+    "success": "Success!",
+    "error": "Error occurred",
+    "warning": "Warning",
+    "info": "Information",
+    "auth": {
+      "login_success": "Welcome back, {{name}}!",
+      "login_error": "Login failed. Please check your credentials.",
+      "logout_success": "You have been logged out successfully",
+      "session_expired": "Your session has expired. Please login again.",
+      "unauthorized": "You are not authorized to perform this action"
+    },
+    "devotees": {
+      "add_success": "Devotee {{name}} added successfully",
+      "add_error": "Failed to add devotee",
+      "update_success": "Devotee {{name}} updated successfully",
+      "update_error": "Failed to update devotee",
+      "delete_success": "Devotee deleted successfully",
+      "delete_error": "Failed to delete devotee",
+      "fetch_error": "Failed to load devotees"
+    },
+    "customers": {
+      "add_success": "Customer {{name}} added successfully",
+      "add_error": "Failed to add customer",
+      "update_success": "Customer {{name}} updated successfully",
+      "update_error": "Failed to update customer",
+      "delete_success": "Customer deleted successfully",
+      "delete_error": "Failed to delete customer",
+      "fetch_error": "Failed to load customers"
+    },
+    "bookings": {
+      "add_success": "Booking {{code}} created successfully",
+      "add_error": "Failed to create booking",
+      "update_success": "Booking {{code}} updated successfully",
+      "update_error": "Failed to update booking",
+      "delete_success": "Booking cancelled successfully",
+      "delete_error": "Failed to cancel booking",
+      "fetch_error": "Failed to load bookings",
+      "confirm_success": "Booking confirmed successfully",
+      "confirm_error": "Failed to confirm booking"
+    },
+    "quotations": {
+      "add_success": "Quotation {{code}} created successfully",
+      "add_error": "Failed to create quotation",
+      "update_success": "Quotation {{code}} updated successfully",
+      "update_error": "Failed to update quotation",
+      "delete_success": "Quotation deleted successfully",
+      "delete_error": "Failed to delete quotation",
+      "fetch_error": "Failed to load quotations",
+      "convert_success": "Quotation converted to booking successfully",
+      "convert_error": "Failed to convert quotation"
+    },
+    "payments": {
+      "add_success": "Payment recorded successfully",
+      "add_error": "Failed to record payment",
+      "update_success": "Payment updated successfully",
+      "update_error": "Failed to update payment",
+      "delete_success": "Payment deleted successfully",
+      "delete_error": "Failed to delete payment"
+    },
+    "pagoda": {
+      "add_success": "Pagoda light registered successfully",
+      "add_error": "Failed to register pagoda light",
+      "update_success": "Pagoda light updated successfully",
+      "update_error": "Failed to update pagoda light",
+      "renew_success": "Pagoda light renewed successfully",
+      "renew_error": "Failed to renew pagoda light"
+    },
+    "donations": {
+      "add_success": "Donation recorded successfully",
+      "add_error": "Failed to record donation",
+      "update_success": "Donation updated successfully",
+      "update_error": "Failed to update donation",
+      "delete_success": "Donation deleted successfully",
+      "delete_error": "Failed to delete donation"
+    },
+    "validation": {
+      "required_fields": "Please fill in all required fields",
+      "invalid_email": "Please enter a valid email address",
+      "invalid_phone": "Please enter a valid phone number",
+      "invalid_date": "Please enter a valid date",
+      "invalid_amount": "Please enter a valid amount"
+    }
   }
 }
