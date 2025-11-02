@@ -115,23 +115,51 @@ class Booking extends Model
      */
     public function calculateTotals()
     {
-        // 1. Hall Rental Amount
+        // 1. Hall Rental Amount - ✅ FIXED TO USE internal_price/external_price
         if ($this->hall && $this->customer) {
             $this->hall_rental_amount = $this->customer->customer_type === 'internal'
-                ? $this->hall->rental_rate_internal
-                : $this->hall->rental_rate_external;
+                ? ($this->hall->internal_price ?? 0)
+                : ($this->hall->external_price ?? 0);
+        } else {
+            $this->hall_rental_amount = 0;
         }
 
         // 2. Additional Items Amount
         $this->additional_items_amount = $this->bookingItems()->sum('total_price');
 
         // 3. Dinner Package Amount
-        $this->dinner_package_amount = $this->dinnerPackage ? $this->dinnerPackage->total_amount : 0;
+        if ($this->dinnerPackage) {
+            // Try to get from dinnerPackage->total_amount first
+            if (isset($this->dinnerPackage->total_amount) && $this->dinnerPackage->total_amount > 0) {
+                $this->dinner_package_amount = $this->dinnerPackage->total_amount;
+            }
+            // If not available, calculate from package relationship
+            else {
+                // Load package if not loaded
+                if (!$this->dinnerPackage->relationLoaded('package')) {
+                    $this->dinnerPackage->load('package');
+                }
+
+                if ($this->dinnerPackage->package) {
+                    $this->dinner_package_amount =
+                        $this->dinnerPackage->package->price_per_table *
+                        $this->dinnerPackage->number_of_tables;
+                } else {
+                    $this->dinner_package_amount = 0;
+                }
+            }
+        } else {
+            $this->dinner_package_amount = 0;
+        }
+
         // 4. Subtotal
-        $this->subtotal = $this->hall_rental_amount + $this->additional_items_amount + $this->dinner_package_amount;
+        $this->subtotal =
+            ($this->hall_rental_amount ?? 0) +
+            ($this->additional_items_amount ?? 0) +
+            ($this->dinner_package_amount ?? 0);
 
         // 5. Discount Amount
-        if ($this->discount_percentage > 0) {
+        if (($this->discount_percentage ?? 0) > 0) {
             $this->discount_amount = ($this->subtotal * $this->discount_percentage) / 100;
         } else {
             $this->discount_amount = 0;
@@ -141,7 +169,7 @@ class Booking extends Model
         $afterDiscount = $this->subtotal - $this->discount_amount;
 
         // 7. Tax Amount
-        if ($this->tax_percentage > 0) {
+        if (($this->tax_percentage ?? 0) > 0) {
             $this->tax_amount = ($afterDiscount * $this->tax_percentage) / 100;
         } else {
             $this->tax_amount = 0;

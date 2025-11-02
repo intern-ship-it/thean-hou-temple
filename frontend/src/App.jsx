@@ -30,7 +30,9 @@ import DinnerPackages from "./pages/hallBooking/DinnerPackages"; // ADD THIS
 import CateringVendors from "./pages/hallBooking/CateringVendors"; // WE'LL CREATE THIS
 import CreateBooking from "./pages/hallBooking/CreateBooking"; // ← ADD THIS
 import EditBooking from "./pages/hallBooking/EditBooking"; 
-import BookingCalendarPage from "./pages/hallBooking/BookingCalendarPage";   
+import BookingCalendarPage from "./pages/hallBooking/BookingCalendarPage"; 
+import SystemSettings from "./pages/settings/SystemSettings";
+
 // Placeholder Pages
 const PagodaLightsPage = () => (
   <div className="bg-white rounded-xl shadow-md p-8">
@@ -216,7 +218,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute requiredRoles={["super_admin"]}>
+                  <SystemSettings />
+                </ProtectedRoute>
+              }
+            />
             {/* Catch all - redirect to dashboard */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>

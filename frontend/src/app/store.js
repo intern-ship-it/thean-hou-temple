@@ -15,7 +15,7 @@ import bookingsReducer from "../features/hallBooking/bookingsSlice";
 import quotationsReducer from "../features/hallBooking/quotationsSlice";
 import paymentsReducer from "../features/hallBooking/paymentsSlice";
 import languageReducer from "../features/language/languageSlice";
-
+import systemSettingsReducer from "../features/systemSettings/systemSettingsSlice";
 
 
 // Combine all reducers
@@ -32,6 +32,7 @@ const rootReducer = combineReducers({
   quotations: quotationsReducer,
   payments: paymentsReducer,
   language: languageReducer,
+  systemSettings: systemSettingsReducer,
 });
 
 // export const store = configureStore({

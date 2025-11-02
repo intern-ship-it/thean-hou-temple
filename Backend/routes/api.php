@@ -14,7 +14,7 @@ use App\Http\Controllers\Api\CateringVendorController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\QuotationController;
 use App\Http\Controllers\Api\PaymentController;
-
+use App\Http\Controllers\Api\SystemSettingController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -78,5 +78,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // PAYMENTS
         Route::apiResource('payments', PaymentController::class);
+    });
+    Route::prefix('system-settings')->group(function () {
+        Route::get('/', [SystemSettingController::class, 'index']);
+        Route::get('/booking-settings', [SystemSettingController::class, 'getBookingSettings']);
+        Route::get('/{id}', [SystemSettingController::class, 'show']);
+        Route::put('/{id}', [SystemSettingController::class, 'update']);
     });
 });

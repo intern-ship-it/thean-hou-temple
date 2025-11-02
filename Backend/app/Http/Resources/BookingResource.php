@@ -37,8 +37,8 @@ class BookingResource extends JsonResource
                 'hall_name' => $this->hall->hall_name,
                 'hall_name_chinese' => $this->hall->hall_name_chinese,
                 'capacity' => $this->hall->capacity,
-                'rental_rate_internal' => $this->hall->rental_rate_internal,
-                'rental_rate_external' => $this->hall->rental_rate_external,
+                'internal_price' => $this->hall->internal_price,
+                'external_price' => $this->hall->external_price,
             ] : null,
 
             // Booking Details

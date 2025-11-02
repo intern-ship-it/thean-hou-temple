@@ -1,4 +1,5 @@
 // src/pages/hallBooking/EditBooking.jsx
+// FIXED FOR YOUR EXACT API STRUCTURE
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -62,16 +63,17 @@ const EditBooking = () => {
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [dinnerPackageData, setDinnerPackageData] = useState({
-    dinner_package_id: "",
-    catering_vendor_id: "",
+    package_id: "", // CHANGED: package.id from your API
+    vendor_id: "", // CHANGED: vendor.id from your API
     number_of_tables: 50,
     special_menu_requests: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [availabilityChecked, setAvailabilityChecked] = useState(true); // true by default for edit
+  const [availabilityChecked, setAvailabilityChecked] = useState(true);
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [allDataReady, setAllDataReady] = useState(false);
 
   // Load all required data on mount
   useEffect(() => {
@@ -87,14 +89,42 @@ const EditBooking = () => {
     };
   }, [dispatch, id]);
 
-  // Populate form with existing booking data
+  // Check if all required data is loaded
   useEffect(() => {
-    if (currentBooking && !dataLoaded) {
+    if (
+      currentBooking &&
+      customers.length > 0 &&
+      halls.length > 0 &&
+      billingItems.length > 0 &&
+      dinnerPackages.length > 0 &&
+      cateringVendors.length > 0
+    ) {
+      setAllDataReady(true);
+    }
+  }, [
+    currentBooking,
+    customers,
+    halls,
+    billingItems,
+    dinnerPackages,
+    cateringVendors,
+  ]);
+
+  // Populate form with existing booking data - FIXED FOR YOUR API STRUCTURE
+  useEffect(() => {
+    if (allDataReady && !dataLoaded) {
+      console.log("Loading booking data:", currentBooking);
+
+      // Convert event_date from "2025-11-30T00:00:00.000000Z" to "2025-11-30"
+      const eventDate = currentBooking.event_date
+        ? currentBooking.event_date.split("T")[0]
+        : "";
+
       setFormData({
         customer_id: currentBooking.customer_id || "",
         hall_id: currentBooking.hall_id || "",
         booking_type: currentBooking.booking_type || "standard",
-        event_date: currentBooking.event_date || "",
+        event_date: eventDate,
         time_slot: currentBooking.time_slot || "morning",
         start_time: currentBooking.start_time || "09:00",
         end_time: currentBooking.end_time || "14:00",
@@ -105,14 +135,14 @@ const EditBooking = () => {
         internal_notes: currentBooking.internal_notes || "",
       });
 
-      // Set booking items
+      // Set booking items - FIXED to match your structure
       if (
         currentBooking.booking_items &&
         currentBooking.booking_items.length > 0
       ) {
         setSelectedItems(
           currentBooking.booking_items.map((item) => ({
-            id: item.id, // Keep the ID for updates
+            id: item.id,
             billing_item_id: item.billing_item_id,
             quantity: item.quantity,
             unit_price: item.unit_price,
@@ -121,30 +151,42 @@ const EditBooking = () => {
         );
       }
 
-      // Set dinner package data
+      // Set dinner package data - FIXED FOR YOUR API STRUCTURE
       if (
         currentBooking.booking_type === "with_dinner" &&
         currentBooking.dinner_package
       ) {
+        console.log(
+          "Loading dinner package data:",
+          currentBooking.dinner_package
+        );
+
+        // YOUR API STRUCTURE:
+        // dinner_package.package.id (not dinner_package_id)
+        // dinner_package.vendor.id (not catering_vendor_id)
         setDinnerPackageData({
-          dinner_package_id:
-            currentBooking.dinner_package.dinner_package_id || "",
-          catering_vendor_id:
-            currentBooking.dinner_package.catering_vendor_id || "",
+          package_id: currentBooking.dinner_package.package?.id || "",
+          vendor_id: currentBooking.dinner_package.vendor?.id || "",
           number_of_tables:
             currentBooking.dinner_package.number_of_tables || 50,
           special_menu_requests:
             currentBooking.dinner_package.special_menu_requests || "",
         });
+
+        console.log("Set dinner package data:", {
+          package_id: currentBooking.dinner_package.package?.id,
+          vendor_id: currentBooking.dinner_package.vendor?.id,
+          number_of_tables: currentBooking.dinner_package.number_of_tables,
+        });
       }
 
       setDataLoaded(true);
     }
-  }, [currentBooking, dataLoaded]);
+  }, [allDataReady, currentBooking, dataLoaded]);
 
   // Update end time based on time slot
   useEffect(() => {
-    if (!dataLoaded) return; // Don't run this on initial load
+    if (!dataLoaded) return;
 
     if (formData.time_slot === "morning") {
       setFormData((prev) => ({
@@ -168,12 +210,10 @@ const EditBooking = () => {
       [name]: value,
     }));
 
-    // Clear availability check when relevant fields change
     if (["hall_id", "event_date", "time_slot"].includes(name)) {
       setAvailabilityChecked(false);
     }
 
-    // Clear error for this field
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -200,7 +240,7 @@ const EditBooking = () => {
           hall_id: formData.hall_id,
           date: formData.event_date,
           time_slot: formData.time_slot,
-          exclude_booking_id: id, // Exclude current booking from availability check
+          exclude_booking_id: id,
         })
       ).unwrap();
       setAvailabilityChecked(true);
@@ -236,7 +276,6 @@ const EditBooking = () => {
       [field]: value,
     };
 
-    // Auto-populate unit price when billing item is selected
     if (field === "billing_item_id") {
       const item = billingItems.find((bi) => bi.id === parseInt(value));
       if (item) {
@@ -273,10 +312,10 @@ const EditBooking = () => {
     }
 
     if (formData.booking_type === "with_dinner") {
-      if (!dinnerPackageData.dinner_package_id) {
+      if (!dinnerPackageData.package_id) {
         newErrors.dinner_package = "Dinner package is required";
       }
-      if (!dinnerPackageData.catering_vendor_id) {
+      if (!dinnerPackageData.vendor_id) {
         newErrors.catering_vendor = "Catering vendor is required";
       }
       if (
@@ -292,6 +331,7 @@ const EditBooking = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // FIXED: Calculate total including dinner package - MATCHES YOUR API STRUCTURE
   const calculateTotal = () => {
     // Calculate items total
     const itemsTotal = selectedItems.reduce((sum, item) => {
@@ -300,29 +340,45 @@ const EditBooking = () => {
       );
     }, 0);
 
-    // Add dinner package if applicable
+    // Add hall base price (if your hall has rental_rate_external)
+    const selectedHall = halls.find((h) => h.id === parseInt(formData.hall_id));
+    const hallPrice = selectedHall
+      ? parseFloat(selectedHall.rental_rate_external || 0)
+      : 0;
+
+    // Add dinner package if applicable - FIXED FOR YOUR API
     let dinnerTotal = 0;
     if (
       formData.booking_type === "with_dinner" &&
-      dinnerPackageData.dinner_package_id
+      dinnerPackageData.package_id
     ) {
       const selectedPackage = dinnerPackages.find(
-        (pkg) => pkg.id === parseInt(dinnerPackageData.dinner_package_id)
+        (pkg) => pkg.id === parseInt(dinnerPackageData.package_id)
       );
       if (selectedPackage) {
+        // YOUR API: price_per_table is in the package object
         dinnerTotal =
-          parseFloat(selectedPackage.price_per_table) *
+          parseFloat(selectedPackage.price_per_table || 0) *
           parseInt(dinnerPackageData.number_of_tables || 0);
       }
     }
 
-    // Add hall base price
-    const selectedHall = halls.find((h) => h.id === parseInt(formData.hall_id));
-    const hallPrice = selectedHall
-      ? parseFloat(selectedHall.base_price_external || 0)
-      : 0;
+    const total = hallPrice + itemsTotal + dinnerTotal;
 
-    return (hallPrice + itemsTotal + dinnerTotal).toFixed(2);
+    console.log("💰 Total Calculation:", {
+      hallPrice,
+      itemsTotal,
+      dinnerTotal,
+      total,
+      booking_type: formData.booking_type,
+      package_id: dinnerPackageData.package_id,
+      number_of_tables: dinnerPackageData.number_of_tables,
+      selectedPackage: dinnerPackages.find(
+        (pkg) => pkg.id === parseInt(dinnerPackageData.package_id)
+      ),
+    });
+
+    return total.toFixed(2);
   };
 
   const handleSubmit = async (e) => {
@@ -337,9 +393,17 @@ const EditBooking = () => {
       booking_items: selectedItems.filter((item) => item.billing_item_id),
     };
 
+    // FIXED: Submit with your API structure
     if (formData.booking_type === "with_dinner") {
-      submitData.dinner_package = dinnerPackageData;
+      submitData.dinner_package = {
+        package_id: dinnerPackageData.package_id, // Your API uses package_id
+        vendor_id: dinnerPackageData.vendor_id, // Your API uses vendor_id
+        number_of_tables: dinnerPackageData.number_of_tables,
+        special_menu_requests: dinnerPackageData.special_menu_requests,
+      };
     }
+
+    console.log("📤 Submitting booking:", submitData);
 
     try {
       await dispatch(updateBooking({ id, data: submitData })).unwrap();
@@ -354,34 +418,42 @@ const EditBooking = () => {
     navigate("/hall/bookings");
   };
 
-  if (!dataLoaded) {
+  if (!allDataReady || !dataLoaded) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-purple-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading booking details...</p>
+          <Loader2 className="w-12 h-12 text-[#A60000] animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 font-semibold">
+            Loading booking details...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-inter">
+      {/* Decorative Background Pattern */}
+      <div className="fixed inset-0 pointer-events-none opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0icGF0dGVybiIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjIwIiBmaWxsPSIjQTYwMDAwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+')] -z-10"></div>
+
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl p-6 shadow-lg">
-        <div className="flex items-center justify-between">
+      <div className="relative bg-gradient-to-br from-[#A60000] via-[#800000] to-[#FFB200] rounded-2xl p-8 shadow-2xl overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFD54F] opacity-10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#FFB200] opacity-10 rounded-full blur-3xl"></div>
+
+        <div className="relative flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
               onClick={handleCancel}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="p-3 hover:bg-white/20 rounded-xl transition-all border-2 border-[#FFD54F]/50 backdrop-blur-sm"
             >
-              <ArrowLeft className="w-6 h-6 text-white" />
+              <ArrowLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white mb-1">
+              <h1 className="text-3xl font-bold text-white mb-1 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 Edit Booking
               </h1>
-              <p className="text-purple-100">
+              <p className="text-[#FFD54F] font-medium tracking-wide">
                 Update booking details for {currentBooking?.booking_code}
               </p>
             </div>
@@ -390,37 +462,44 @@ const EditBooking = () => {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-xl shadow-md">
-        <form onSubmit={handleSubmit} className="p-6 space-y-8">
+      <div className="bg-white rounded-2xl shadow-xl border-2 border-[#FFD54F]/30">
+        <form onSubmit={handleSubmit} className="p-8 space-y-8">
           {/* Basic Information */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Building2 className="w-5 h-5 mr-2 text-purple-600" />
+            <h3 className="text-xl font-bold text-[#800000] mb-6 flex items-center tracking-wide border-l-4 border-[#FFD54F] pl-3">
+              <Building2
+                className="w-6 h-6 mr-3 text-[#FFD54F]"
+                strokeWidth={2.5}
+              />
               Basic Information
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Customer */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Customer <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="customer_id"
                   value={formData.customer_id}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 ${
-                    errors.customer_id ? "border-red-500" : "border-gray-300"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                    errors.customer_id
+                      ? "border-red-500"
+                      : "border-[#FFD54F]/50"
                   }`}
                 >
                   <option value="">Select Customer</option>
                   {customers.map((customer) => (
                     <option key={customer.id} value={customer.id}>
-                      {customer.customer_code} - {customer.full_name}
+                      {customer.customer_code} -{" "}
+                      {customer.name_english || customer.full_name}
                     </option>
                   ))}
                 </select>
                 {errors.customer_id && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.customer_id}
                   </p>
                 )}
@@ -428,14 +507,14 @@ const EditBooking = () => {
 
               {/* Booking Type */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Booking Type <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="booking_type"
                   value={formData.booking_type}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
                 >
                   <option value="standard">Standard Hall Rental</option>
                   <option value="with_dinner">With Dinner Package</option>
@@ -444,32 +523,37 @@ const EditBooking = () => {
 
               {/* Hall */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Hall <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="hall_id"
                   value={formData.hall_id}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 ${
-                    errors.hall_id ? "border-red-500" : "border-gray-300"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                    errors.hall_id ? "border-red-500" : "border-[#FFD54F]/50"
                   }`}
                 >
                   <option value="">Select Hall</option>
                   {halls.map((hall) => (
                     <option key={hall.id} value={hall.id}>
-                      {hall.hall_name} (RM {hall.base_price_external})
+                      {hall.hall_name}{" "}
+                      {hall.rental_rate_external &&
+                        `(RM ${hall.rental_rate_external})`}
                     </option>
                   ))}
                 </select>
                 {errors.hall_id && (
-                  <p className="mt-1 text-sm text-red-600">{errors.hall_id}</p>
+                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.hall_id}
+                  </p>
                 )}
               </div>
 
               {/* Event Date */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Event Date <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -477,12 +561,13 @@ const EditBooking = () => {
                   name="event_date"
                   value={formData.event_date}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 ${
-                    errors.event_date ? "border-red-500" : "border-gray-300"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                    errors.event_date ? "border-red-500" : "border-[#FFD54F]/50"
                   }`}
                 />
                 {errors.event_date && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.event_date}
                   </p>
                 )}
@@ -490,14 +575,14 @@ const EditBooking = () => {
 
               {/* Time Slot */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Time Slot <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="time_slot"
                   value={formData.time_slot}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
                 >
                   <option value="morning">Morning (9:00 AM - 2:00 PM)</option>
                   <option value="evening">Evening (6:00 PM - 11:00 PM)</option>
@@ -506,14 +591,14 @@ const EditBooking = () => {
 
               {/* Status */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Booking Status <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
                 >
                   <option value="pending">Pending</option>
                   <option value="confirmed">Confirmed</option>
@@ -533,41 +618,45 @@ const EditBooking = () => {
                     !formData.time_slot ||
                     checkingAvailability
                   }
-                  className="w-full sm:w-auto px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#FFB200] to-[#FFD54F] text-[#800000] font-bold rounded-xl hover:shadow-xl hover:shadow-[#FFD54F]/50 transition-all disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2 tracking-wide border-2 border-white"
                 >
                   {checkingAvailability ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2
+                        className="w-6 h-6 animate-spin"
+                        strokeWidth={2.5}
+                      />
                       <span>Checking...</span>
                     </>
                   ) : (
                     <>
-                      <CheckCircle className="w-5 h-5" />
+                      <CheckCircle className="w-6 h-6" strokeWidth={2.5} />
                       <span>Check Availability</span>
                     </>
                   )}
                 </button>
 
-                {/* Availability Status */}
                 {availabilityChecked && availability?.available && (
-                  <div className="mt-3 flex items-center space-x-2 text-green-600">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-semibold">Hall is available!</span>
+                  <div className="mt-4 flex items-center space-x-2 text-green-600 bg-green-50 p-4 rounded-xl border-2 border-green-300">
+                    <CheckCircle className="w-6 h-6" strokeWidth={2.5} />
+                    <span className="font-bold tracking-wide">
+                      Hall is available!
+                    </span>
                   </div>
                 )}
 
                 {availability?.available === false && (
-                  <div className="mt-3 flex items-center space-x-2 text-red-600">
-                    <AlertCircle className="w-5 h-5" />
-                    <span className="font-semibold">
+                  <div className="mt-4 flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-xl border-2 border-red-300">
+                    <AlertCircle className="w-6 h-6" strokeWidth={2.5} />
+                    <span className="font-bold tracking-wide">
                       {availability.message}
                     </span>
                   </div>
                 )}
 
                 {errors.availability && (
-                  <p className="mt-3 text-sm text-red-600 flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
+                  <p className="mt-4 text-sm text-red-600 flex items-center bg-red-50 p-4 rounded-xl border-2 border-red-300 font-semibold">
+                    <AlertCircle className="w-5 h-5 mr-2" strokeWidth={2.5} />
                     {errors.availability}
                   </p>
                 )}
@@ -577,14 +666,17 @@ const EditBooking = () => {
 
           {/* Event Details */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Calendar className="w-5 h-5 mr-2 text-purple-600" />
+            <h3 className="text-xl font-bold text-[#800000] mb-6 flex items-center tracking-wide border-l-4 border-[#FFD54F] pl-3">
+              <Calendar
+                className="w-6 h-6 mr-3 text-[#FFD54F]"
+                strokeWidth={2.5}
+              />
               Event Details
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Event Type */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Event Type <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -593,12 +685,13 @@ const EditBooking = () => {
                   value={formData.event_type}
                   onChange={handleChange}
                   placeholder="e.g., Wedding, Birthday"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 ${
-                    errors.event_type ? "border-red-500" : "border-gray-300"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                    errors.event_type ? "border-red-500" : "border-[#FFD54F]/50"
                   }`}
                 />
                 {errors.event_type && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.event_type}
                   </p>
                 )}
@@ -606,7 +699,7 @@ const EditBooking = () => {
 
               {/* Guest Count */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Expected Guests <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -616,12 +709,15 @@ const EditBooking = () => {
                   onChange={handleChange}
                   min="1"
                   placeholder="Expected guests"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 ${
-                    errors.guest_count ? "border-red-500" : "border-gray-300"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                    errors.guest_count
+                      ? "border-red-500"
+                      : "border-[#FFD54F]/50"
                   }`}
                 />
                 {errors.guest_count && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.guest_count}
                   </p>
                 )}
@@ -629,7 +725,7 @@ const EditBooking = () => {
 
               {/* Start Time */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Start Time <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -637,13 +733,13 @@ const EditBooking = () => {
                   name="start_time"
                   value={formData.start_time}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
                 />
               </div>
 
               {/* End Time */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   End Time <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -651,7 +747,7 @@ const EditBooking = () => {
                   name="end_time"
                   value={formData.end_time}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
                 />
               </div>
             </div>
@@ -659,27 +755,30 @@ const EditBooking = () => {
 
           {/* Additional Items */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                <Plus className="w-5 h-5 mr-2 text-purple-600" />
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#800000] flex items-center tracking-wide border-l-4 border-[#FFD54F] pl-3">
+                <Plus
+                  className="w-6 h-6 mr-3 text-[#FFD54F]"
+                  strokeWidth={2.5}
+                />
                 Additional Items
               </h3>
               <button
                 type="button"
                 onClick={handleAddItem}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+                className="px-6 py-3 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white rounded-xl hover:shadow-lg hover:shadow-[#A60000]/30 transition-all flex items-center space-x-2 font-bold tracking-wide"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-5 h-5" strokeWidth={2.5} />
                 <span>Add Item</span>
               </button>
             </div>
 
             {selectedItems.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {selectedItems.map((item, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-gray-50 rounded-lg"
+                    className="grid grid-cols-1 md:grid-cols-12 gap-4 p-5 bg-gradient-to-r from-[#FFF8F6] to-white rounded-2xl border-2 border-[#FFD54F]/30 shadow-md"
                   >
                     {/* Billing Item */}
                     <div className="md:col-span-4">
@@ -692,7 +791,7 @@ const EditBooking = () => {
                             e.target.value
                           )
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2.5 border-2 border-[#FFD54F]/50 rounded-xl bg-white font-medium"
                       >
                         <option value="">Select Item</option>
                         {billingItems.map((bi) => (
@@ -713,7 +812,7 @@ const EditBooking = () => {
                         }
                         min="1"
                         placeholder="Qty"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2.5 border-2 border-[#FFD54F]/50 rounded-xl bg-white font-medium"
                       />
                     </div>
 
@@ -727,7 +826,7 @@ const EditBooking = () => {
                         }
                         step="0.01"
                         placeholder="Price"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2.5 border-2 border-[#FFD54F]/50 rounded-xl bg-white font-medium"
                       />
                     </div>
 
@@ -740,7 +839,7 @@ const EditBooking = () => {
                           handleItemChange(index, "remarks", e.target.value)
                         }
                         placeholder="Remarks (optional)"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2.5 border-2 border-[#FFD54F]/50 rounded-xl bg-white font-medium"
                       />
                     </div>
 
@@ -749,9 +848,9 @@ const EditBooking = () => {
                       <button
                         type="button"
                         onClick={() => handleRemoveItem(index)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-all border-2 border-red-300"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-5 h-5" strokeWidth={2.5} />
                       </button>
                     </div>
                   </div>
@@ -760,27 +859,30 @@ const EditBooking = () => {
             )}
           </div>
 
-          {/* Dinner Package (if applicable) */}
+          {/* Dinner Package - FIXED FOR YOUR API */}
           {formData.booking_type === "with_dinner" && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <Users className="w-5 h-5 mr-2 text-purple-600" />
+              <h3 className="text-xl font-bold text-[#800000] mb-6 flex items-center tracking-wide border-l-4 border-[#FFD54F] pl-3">
+                <Users
+                  className="w-6 h-6 mr-3 text-[#FFD54F]"
+                  strokeWidth={2.5}
+                />
                 Dinner Package Details
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Dinner Package */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Dinner Package - CHANGED: using package_id */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Dinner Package <span className="text-red-500">*</span>
                   </label>
                   <select
-                    name="dinner_package_id"
-                    value={dinnerPackageData.dinner_package_id}
+                    name="package_id"
+                    value={dinnerPackageData.package_id}
                     onChange={handleDinnerPackageChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
                       errors.dinner_package
                         ? "border-red-500"
-                        : "border-gray-300"
+                        : "border-[#FFD54F]/50"
                     }`}
                   >
                     <option value="">Select Package</option>
@@ -792,36 +894,38 @@ const EditBooking = () => {
                     ))}
                   </select>
                   {errors.dinner_package && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.dinner_package}
                     </p>
                   )}
                 </div>
 
-                {/* Catering Vendor */}
+                {/* Catering Vendor - CHANGED: using vendor_id */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Catering Vendor <span className="text-red-500">*</span>
                   </label>
                   <select
-                    name="catering_vendor_id"
-                    value={dinnerPackageData.catering_vendor_id}
+                    name="vendor_id"
+                    value={dinnerPackageData.vendor_id}
                     onChange={handleDinnerPackageChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
                       errors.catering_vendor
                         ? "border-red-500"
-                        : "border-gray-300"
+                        : "border-[#FFD54F]/50"
                     }`}
                   >
                     <option value="">Select Vendor</option>
                     {cateringVendors.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>
-                        {vendor.vendor_name} ({vendor.cuisine_type})
+                        {vendor.vendor_name} ({vendor.vendor_type})
                       </option>
                     ))}
                   </select>
                   {errors.catering_vendor && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.catering_vendor}
                     </p>
                   )}
@@ -829,7 +933,7 @@ const EditBooking = () => {
 
                 {/* Number of Tables */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Number of Tables <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -839,14 +943,15 @@ const EditBooking = () => {
                     onChange={handleDinnerPackageChange}
                     min="50"
                     placeholder="Minimum 50 tables"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
                       errors.number_of_tables
                         ? "border-red-500"
-                        : "border-gray-300"
+                        : "border-[#FFD54F]/50"
                     }`}
                   />
                   {errors.number_of_tables && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.number_of_tables}
                     </p>
                   )}
@@ -854,7 +959,7 @@ const EditBooking = () => {
 
                 {/* Special Menu Requests */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Special Menu Requests
                   </label>
                   <textarea
@@ -863,7 +968,7 @@ const EditBooking = () => {
                     onChange={handleDinnerPackageChange}
                     rows="3"
                     placeholder="Any special dietary requirements or menu preferences..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
                   />
                 </div>
               </div>
@@ -871,10 +976,9 @@ const EditBooking = () => {
           )}
 
           {/* Special Requests & Notes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Special Requests */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                 Special Requests
               </label>
               <textarea
@@ -883,13 +987,12 @@ const EditBooking = () => {
                 onChange={handleChange}
                 rows="4"
                 placeholder="Any special requests from customer..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
               />
             </div>
 
-            {/* Internal Notes */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                 Internal Notes
               </label>
               <textarea
@@ -898,54 +1001,106 @@ const EditBooking = () => {
                 onChange={handleChange}
                 rows="4"
                 placeholder="Internal notes (not visible to customer)..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
               />
             </div>
           </div>
 
-          {/* Total */}
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-semibold text-gray-900">
+          {/* Total with Breakdown */}
+          <div className="bg-gradient-to-br from-[#FFD54F]/30 to-[#FFB200]/30 border-4 border-[#FFD54F] rounded-2xl p-8 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xl font-bold text-[#800000] tracking-wide">
                 Estimated Total:
               </span>
-              <span className="text-3xl font-bold text-purple-600">
+              <span className="text-4xl font-bold text-[#A60000] tracking-wide">
                 RM {calculateTotal()}
               </span>
             </div>
+
+            {/* Show breakdown */}
+            {formData.booking_type === "with_dinner" &&
+              dinnerPackageData.package_id && (
+                <div className="pt-4 border-t-2 border-[#FFD54F] space-y-2 text-sm">
+                  <div className="flex justify-between text-gray-700">
+                    <span>Hall Base Price:</span>
+                    <span className="font-semibold">
+                      RM{" "}
+                      {halls.find((h) => h.id === parseInt(formData.hall_id))
+                        ?.rental_rate_external || "0.00"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-gray-700">
+                    <span>Additional Items:</span>
+                    <span className="font-semibold">
+                      RM{" "}
+                      {selectedItems
+                        .reduce(
+                          (sum, item) =>
+                            sum +
+                            parseFloat(item.unit_price || 0) *
+                              parseInt(item.quantity || 0),
+                          0
+                        )
+                        .toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-[#A60000] font-bold text-base">
+                    <span>
+                      Dinner Package ({dinnerPackageData.number_of_tables}{" "}
+                      tables):
+                    </span>
+                    <span>
+                      RM{" "}
+                      {(
+                        parseFloat(
+                          dinnerPackages.find(
+                            (pkg) =>
+                              pkg.id === parseInt(dinnerPackageData.package_id)
+                          )?.price_per_table || 0
+                        ) * parseInt(dinnerPackageData.number_of_tables || 0)
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              )}
           </div>
 
           {/* Error Message */}
           {errors.submit && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-600">{errors.submit}</p>
+            <div className="bg-red-50 border-4 border-red-300 rounded-2xl p-6 flex items-start space-x-3 shadow-lg">
+              <AlertCircle
+                className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5"
+                strokeWidth={2.5}
+              />
+              <p className="text-sm text-red-600 font-semibold">
+                {errors.submit}
+              </p>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end space-x-4 pt-6 border-t">
+          <div className="flex items-center justify-end space-x-4 pt-8 border-t-2 border-[#FFD54F]/30">
             <button
               type="button"
               onClick={handleCancel}
               disabled={loading}
-              className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="px-8 py-4 border-2 border-[#A60000] text-[#A60000] font-bold rounded-xl hover:bg-[#A60000] hover:text-white transition-all disabled:opacity-50 tracking-wide"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !availabilityChecked}
-              className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="px-8 py-4 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-[#A60000]/50 transition-all disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center space-x-2 tracking-wide border-2 border-white"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-6 h-6 animate-spin" strokeWidth={2.5} />
                   <span>Updating...</span>
                 </>
               ) : (
                 <>
-                  <Save className="w-5 h-5" />
+                  <Save className="w-6 h-6" strokeWidth={2.5} />
                   <span>Update Booking</span>
                 </>
               )}

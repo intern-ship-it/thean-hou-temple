@@ -257,7 +257,7 @@ const BookingCalendarPage = () => {
                 >
                   <ArrowLeft className="w-5 h-5 text-gray-600" />
                 </button>
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 bg-gradient-to-br from-red-700 to-red-900 rounded-lg flex items-center justify-center shadow-lg">
                   <CalendarIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -306,18 +306,18 @@ const BookingCalendarPage = () => {
 
             {/* Calendar Grid - Flexible height */}
             <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden flex-1 flex flex-col min-h-0">
-              {/* Compact Weekday Headers */}
-              <div className="grid grid-cols-7 bg-gradient-to-r from-blue-600 to-purple-600 flex-shrink-0">
+              {/* Compact Weekday Headers - RED TEMPLE COLORS */}
+              <div className="grid grid-cols-7 bg-gradient-to-r from-red-700 to-red-900 flex-shrink-0">
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                   (day, idx) => (
                     <div
                       key={day}
-                      className="p-2 text-center border-r border-blue-500 last:border-r-0"
+                      className="p-2 text-center border-r border-red-600 last:border-r-0"
                     >
                       <span className="text-xs font-bold text-white block">
                         {day}
                       </span>
-                      <span className="text-[10px] text-blue-100">
+                      <span className="text-[10px] text-red-100">
                         {["日", "一", "二", "三", "四", "五", "六"][idx]}
                       </span>
                     </div>
@@ -358,12 +358,12 @@ const BookingCalendarPage = () => {
                         }
                         ${
                           !isPast && !isSelected
-                            ? "bg-white hover:bg-blue-50 text-gray-900 cursor-pointer"
+                            ? "bg-white hover:bg-red-50 text-gray-900 cursor-pointer"
                             : ""
                         }
                         ${
                           isSelected
-                            ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg scale-105 z-10"
+                            ? "bg-gradient-to-br from-red-700 to-red-900 text-white shadow-lg scale-105 z-10"
                             : ""
                         }
                       `}
@@ -376,7 +376,7 @@ const BookingCalendarPage = () => {
                         {date.getDate()}
                       </span>
 
-                      {/* Booking Indicator Dots */}
+                      {/* Booking Indicator Dots - ORANGE */}
                       {hasEvents && !isSelected && (
                         <div className="absolute bottom-1 flex gap-0.5">
                           {bookedDates[formatDate(date)]
@@ -384,7 +384,7 @@ const BookingCalendarPage = () => {
                             .map((_, i) => (
                               <div
                                 key={i}
-                                className="w-1 h-1 rounded-full bg-purple-500"
+                                className="w-1 h-1 rounded-full bg-orange-500"
                               />
                             ))}
                         </div>
@@ -424,23 +424,23 @@ const BookingCalendarPage = () => {
                 </div>
                 <div className="flex items-center space-x-1">
                   <div className="flex gap-0.5">
-                    <div className="w-1 h-1 rounded-full bg-purple-500"></div>
-                    <div className="w-1 h-1 rounded-full bg-purple-500"></div>
+                    <div className="w-1 h-1 rounded-full bg-orange-500"></div>
+                    <div className="w-1 h-1 rounded-full bg-orange-500"></div>
                   </div>
                   <span className="text-[10px] text-gray-700">Bookings</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded"></div>
+                  <div className="w-3 h-3 bg-gradient-to-br from-red-700 to-red-900 rounded"></div>
                   <span className="text-[10px] text-gray-700">Selected</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Selection Panel - 1 column with internal scroll */}
+          {/* Selection Panel - RED TEMPLE COLORS */}
           <div className="xl:col-span-1 flex flex-col min-h-0">
             {selectedDate ? (
-              <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-4 shadow-lg border border-blue-400 flex flex-col min-h-0 h-full">
+              <div className="bg-gradient-to-br from-red-700 to-red-900 rounded-xl p-4 shadow-lg border border-red-600 flex flex-col min-h-0 h-full">
                 <h3 className="text-xs font-bold text-white mb-2 uppercase tracking-wide flex items-center flex-shrink-0">
                   <CalendarIcon className="w-3 h-3 mr-1" />
                   Selected Date 已选日期
@@ -461,7 +461,7 @@ const BookingCalendarPage = () => {
                 <div className="flex-1 overflow-y-auto min-h-0 space-y-3 pr-1 custom-scrollbar">
                   {/* Hall Selection */}
                   <div>
-                    <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide flex items-center sticky top-0 bg-gradient-to-br from-blue-500 to-purple-600 pb-1">
+                    <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide flex items-center sticky top-0 bg-gradient-to-br from-red-700 to-red-900 pb-1">
                       <Building2 className="w-3 h-3 mr-1" />
                       Select Hall 选择大厅
                     </h4>
@@ -515,7 +515,7 @@ const BookingCalendarPage = () => {
                   {/* Time Slot Selection */}
                   {selectedHall && (
                     <div>
-                      <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide flex items-center sticky top-0 bg-gradient-to-br from-blue-500 to-purple-600 pb-1">
+                      <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide flex items-center sticky top-0 bg-gradient-to-br from-red-700 to-red-900 pb-1">
                         <Clock className="w-3 h-3 mr-1" />
                         Time Slot 时段
                       </h4>
@@ -634,7 +634,7 @@ const BookingCalendarPage = () => {
                 {selectedDate && selectedHall && selectedTimeSlot && (
                   <button
                     onClick={handleConfirm}
-                    className="w-full bg-white text-blue-600 font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center justify-center space-x-2 mt-3 flex-shrink-0"
+                    className="w-full bg-white text-red-800 font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center justify-center space-x-2 mt-3 flex-shrink-0"
                   >
                     <CheckCircle className="w-4 h-4" />
                     <span className="text-sm">Continue 继续预订</span>
@@ -643,7 +643,7 @@ const BookingCalendarPage = () => {
               </div>
             ) : (
               <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200 text-center flex flex-col items-center justify-center h-full">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-3 flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-700 to-red-900 rounded-full mx-auto mb-3 flex items-center justify-center">
                   <CalendarIcon className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">
@@ -652,7 +652,7 @@ const BookingCalendarPage = () => {
                 <p className="text-xs text-gray-600 mb-2">
                   Click on an available date to begin
                 </p>
-                <div className="flex items-center justify-center space-x-1.5 text-blue-600">
+                <div className="flex items-center justify-center space-x-1.5 text-red-700">
                   <Sparkles className="w-3 h-3" />
                   <span className="font-semibold text-xs">
                     选择一个日期开始预订

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\DinnerPackage;
 use App\Http\Resources\BookingResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -139,18 +140,29 @@ class BookingController extends Controller
                 }
             }
 
-            // Create dinner package if provided
+            // Create dinner package if provided - ✅ FIXED!
             if ($request->has('dinner_package') && $request->booking_type === 'with_dinner') {
                 $dinnerData = $request->dinner_package;
+
+                // ✅ Get the package to retrieve price_per_table
+                $package = DinnerPackage::findOrFail($dinnerData['dinner_package_id']);
+
+                // ✅ Calculate total_amount
+                $totalAmount = $package->price_per_table * $dinnerData['number_of_tables'];
+
+                // ✅ Create with price_per_table and total_amount
                 $booking->dinnerPackage()->create([
                     'dinner_package_id' => $dinnerData['dinner_package_id'],
                     'catering_vendor_id' => $dinnerData['catering_vendor_id'],
                     'number_of_tables' => $dinnerData['number_of_tables'],
+                    'price_per_table' => $package->price_per_table,  // ✅ ADD THIS
+                    'total_amount' => $totalAmount,                   // ✅ ADD THIS
                     'special_menu_requests' => $dinnerData['special_menu_requests'] ?? null,
                 ]);
             }
 
-            // Recalculate totals
+            // ✅ Recalculate totals
+            $booking->load(['customer', 'hall', 'bookingItems', 'dinnerPackage.package']);
             $booking->calculateTotals();
             $booking->save();
 
@@ -208,8 +220,8 @@ class BookingController extends Controller
 
             // Dinner package
             'dinner_package' => 'nullable|array',
-            'dinner_package.dinner_package_id' => 'required_with:dinner_package|exists:dinner_packages,id',
-            'dinner_package.catering_vendor_id' => 'required_with:dinner_package|exists:catering_vendors,id',
+            'dinner_package.package_id' => 'required_with:dinner_package|exists:dinner_packages,id',
+            'dinner_package.vendor_id' => 'required_with:dinner_package|exists:catering_vendors,id',
             'dinner_package.number_of_tables' => 'required_with:dinner_package|integer|min:1',
             'dinner_package.special_menu_requests' => 'nullable|string',
 
@@ -269,22 +281,33 @@ class BookingController extends Controller
                 }
             }
 
-            // Update dinner package if provided
+            // Update dinner package if provided - ✅ FIXED!
             if ($request->has('dinner_package')) {
                 $booking->dinnerPackage()->delete();
 
                 if ($request->booking_type === 'with_dinner') {
                     $dinnerData = $request->dinner_package;
+
+                    // ✅ Get the package to retrieve price_per_table
+                    $package = DinnerPackage::findOrFail($dinnerData['package_id']);
+
+                    // ✅ Calculate total_amount
+                    $totalAmount = $package->price_per_table * $dinnerData['number_of_tables'];
+
+                    // ✅ Create with price_per_table and total_amount
                     $booking->dinnerPackage()->create([
-                        'dinner_package_id' => $dinnerData['dinner_package_id'],
-                        'catering_vendor_id' => $dinnerData['catering_vendor_id'],
+                        'dinner_package_id' => $dinnerData['package_id'],
+                        'catering_vendor_id' => $dinnerData['vendor_id'],
                         'number_of_tables' => $dinnerData['number_of_tables'],
+                        'price_per_table' => $package->price_per_table,  // ✅ ADD THIS
+                        'total_amount' => $totalAmount,                   // ✅ ADD THIS
                         'special_menu_requests' => $dinnerData['special_menu_requests'] ?? null,
                     ]);
                 }
             }
 
-            // Recalculate totals
+            // ✅ Recalculate totals
+            $booking->load(['customer', 'hall', 'bookingItems', 'dinnerPackage.package']);
             $booking->calculateTotals();
             $booking->save();
 
