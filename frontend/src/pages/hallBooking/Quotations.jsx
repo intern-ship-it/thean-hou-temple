@@ -30,6 +30,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { showToast } from "../../utils/toast";
+
 const Quotations = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -119,35 +120,31 @@ const Quotations = () => {
     setShowAcceptConfirm(true);
   };
 
- const confirmAccept = async () => {
-   if (quotationToAccept) {
-     try {
-       const result = await dispatch(
-         acceptQuotation(quotationToAccept.id)
-       ).unwrap();
-       setShowAcceptConfirm(false);
-       setQuotationToAccept(null);
+  const confirmAccept = async () => {
+    if (quotationToAccept) {
+      try {
+        const result = await dispatch(
+          acceptQuotation(quotationToAccept.id)
+        ).unwrap();
+        setShowAcceptConfirm(false);
+        setQuotationToAccept(null);
 
-       // ✅ REPLACED: Old code was alert(`Quotation accepted! Booking ${result.data.booking_code} created successfully.`);
-       // ✅ NEW: Use toast instead
-       showToast.success(
-         "toast.quotations.accept_success",
-         {},
-         {
-           code: result.data.booking_code,
-         }
-       );
+        showToast.success(
+          "toast.quotations.accept_success",
+          {},
+          {
+            code: result.data.booking_code,
+          }
+        );
 
-       // Small delay before navigation so user can see the toast
-       setTimeout(() => {
-         navigate("/hall/bookings");
-       }, 500);
-     } catch (err) {
-       console.error("Failed to accept quotation:", err);
-       // Error toast is already shown by the slice
-     }
-   }
- };
+        setTimeout(() => {
+          navigate("/hall/bookings");
+        }, 500);
+      } catch (err) {
+        console.error("Failed to accept quotation:", err);
+      }
+    }
+  };
 
   const handleFormSubmit = async (formData) => {
     try {
@@ -176,78 +173,112 @@ const Quotations = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 sm:p-8 text-white shadow-lg">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6 font-inter">
+      {/* Decorative Background Pattern */}
+      <div className="fixed inset-0 pointer-events-none opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0icGF0dGVybiIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjIwIiBmaWxsPSIjQTYwMDAwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+')] -z-10"></div>
+
+      {/* Header with Gold-Red Gradient */}
+      <div className="relative bg-gradient-to-br from-[#A60000] via-[#800000] to-[#FFB200] rounded-2xl p-8 text-white shadow-2xl overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFD54F] opacity-10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#FFB200] opacity-10 rounded-full blur-3xl"></div>
+
+        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-              <FileText className="w-7 h-7" />
+            <div className="w-14 h-14 bg-gradient-to-br from-[#FFD54F] to-[#FFB200] rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+              <FileText className="w-8 h-8 text-[#800000]" strokeWidth={2.5} />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-1">
+              <h1 className="text-3xl sm:text-4xl font-bold mb-1 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 Quotations Management
               </h1>
-              <p className="text-green-100">
+              <p className="text-[#FFD54F] font-medium tracking-wide">
                 Generate and manage customer quotations
               </p>
             </div>
           </div>
           <div className="mt-4 sm:mt-0">
-            <div className="inline-flex items-center px-4 py-2 bg-white/10 rounded-lg backdrop-blur-sm">
-              <FileText className="w-5 h-5 mr-2" />
-              <span className="font-semibold">
-                {pagination.total} Total Quotations
-              </span>
-            </div>
+            <button
+              onClick={handleAdd}
+              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#FFD54F] to-[#FFB200] text-[#800000] font-bold rounded-xl hover:shadow-2xl hover:shadow-[#FFD54F]/50 transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-2"
+            >
+              <Plus className="w-5 h-5" strokeWidth={3} />
+              <span className="tracking-wide">New Quotation</span>
+            </button>
           </div>
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+        <div className="relative grid grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
+          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Draft</p>
-                <p className="text-2xl font-bold mt-1">{statistics.draft}</p>
+                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
+                  Draft
+                </p>
+                <p className="text-3xl font-bold mt-2">{statistics.draft}</p>
               </div>
-              <FileText className="w-8 h-8 text-green-200" />
+              <div className="w-12 h-12 bg-gray-400 rounded-xl flex items-center justify-center">
+                <FileText className="w-7 h-7 text-gray-900" strokeWidth={2.5} />
+              </div>
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Sent</p>
-                <p className="text-2xl font-bold mt-1">{statistics.sent}</p>
+                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
+                  Sent
+                </p>
+                <p className="text-3xl font-bold mt-2">{statistics.sent}</p>
               </div>
-              <Clock className="w-8 h-8 text-green-200" />
+              <div className="w-12 h-12 bg-blue-400 rounded-xl flex items-center justify-center">
+                <Clock className="w-7 h-7 text-blue-900" strokeWidth={2.5} />
+              </div>
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Accepted</p>
-                <p className="text-2xl font-bold mt-1">{statistics.accepted}</p>
+                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
+                  Accepted
+                </p>
+                <p className="text-3xl font-bold mt-2">{statistics.accepted}</p>
               </div>
-              <CheckCircle className="w-8 h-8 text-green-200" />
+              <div className="w-12 h-12 bg-green-400 rounded-xl flex items-center justify-center">
+                <CheckCircle
+                  className="w-7 h-7 text-green-900"
+                  strokeWidth={2.5}
+                />
+              </div>
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Rejected</p>
-                <p className="text-2xl font-bold mt-1">{statistics.rejected}</p>
+                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
+                  Rejected
+                </p>
+                <p className="text-3xl font-bold mt-2">{statistics.rejected}</p>
               </div>
-              <XCircle className="w-8 h-8 text-green-200" />
+              <div className="w-12 h-12 bg-red-400 rounded-xl flex items-center justify-center">
+                <XCircle className="w-7 h-7 text-red-900" strokeWidth={2.5} />
+              </div>
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Expired</p>
-                <p className="text-2xl font-bold mt-1">{statistics.expired}</p>
+                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
+                  Expired
+                </p>
+                <p className="text-3xl font-bold mt-2">{statistics.expired}</p>
               </div>
-              <XCircle className="w-8 h-8 text-green-200" />
+              <div className="w-12 h-12 bg-orange-400 rounded-xl flex items-center justify-center">
+                <XCircle
+                  className="w-7 h-7 text-orange-900"
+                  strokeWidth={2.5}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -255,17 +286,17 @@ const Quotations = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start justify-between animate-fade-in">
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 w-5 h-5 text-red-600 mt-0.5">⚠️</div>
+        <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+          <div className="flex items-center space-x-3">
+            <AlertCircle className="w-6 h-6 text-red-600" strokeWidth={2.5} />
             <div>
-              <h3 className="text-sm font-semibold text-red-800">Error</h3>
-              <p className="text-sm text-red-700 mt-1">{error}</p>
+              <h3 className="text-sm font-bold text-red-800">Error</h3>
+              <p className="text-sm text-red-700 font-semibold mt-1">{error}</p>
             </div>
           </div>
           <button
             onClick={() => dispatch(clearError())}
-            className="text-red-600 hover:text-red-800"
+            className="text-red-600 hover:text-red-800 p-2 hover:bg-red-100 rounded-lg transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -273,15 +304,15 @@ const Quotations = () => {
       )}
 
       {/* Actions Bar */}
-      <div className="bg-white rounded-xl shadow-md p-4">
+      <div className="bg-white rounded-2xl shadow-xl p-5 border border-[#FFD54F]/20">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 gap-4">
           {/* Status Filter Buttons */}
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => handleStatusFilter("")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-xl font-bold transition-all ${
                 filters.status === ""
-                  ? "bg-green-600 text-white"
+                  ? "bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white shadow-lg"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -289,9 +320,9 @@ const Quotations = () => {
             </button>
             <button
               onClick={() => handleStatusFilter("draft")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-xl font-bold transition-all ${
                 filters.status === "draft"
-                  ? "bg-green-600 text-white"
+                  ? "bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white shadow-lg"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -299,9 +330,9 @@ const Quotations = () => {
             </button>
             <button
               onClick={() => handleStatusFilter("sent")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-xl font-bold transition-all ${
                 filters.status === "sent"
-                  ? "bg-green-600 text-white"
+                  ? "bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white shadow-lg"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -309,9 +340,9 @@ const Quotations = () => {
             </button>
             <button
               onClick={() => handleStatusFilter("accepted")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-xl font-bold transition-all ${
                 filters.status === "accepted"
-                  ? "bg-green-600 text-white"
+                  ? "bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white shadow-lg"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -319,9 +350,9 @@ const Quotations = () => {
             </button>
             <button
               onClick={() => handleStatusFilter("rejected")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-xl font-bold transition-all ${
                 filters.status === "rejected"
-                  ? "bg-green-600 text-white"
+                  ? "bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white shadow-lg"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -333,24 +364,17 @@ const Quotations = () => {
           <div className="flex items-center space-x-3">
             <button
               onClick={handleRefresh}
-              className="p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2.5 text-[#A60000] hover:bg-[#FFD54F]/20 rounded-xl transition-all border border-[#FFD54F]/30"
               title="Refresh"
             >
-              <RefreshCw className="w-5 h-5" />
+              <RefreshCw className="w-5 h-5" strokeWidth={2.5} />
             </button>
             <button
-              className="hidden sm:flex items-center space-x-2 px-4 py-2.5 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="hidden sm:flex items-center space-x-2 px-4 py-2.5 text-[#A60000] border-2 border-[#A60000] rounded-xl hover:bg-[#A60000] hover:text-white transition-all font-bold"
               title="Export"
             >
-              <Download className="w-5 h-5" />
-              <span className="font-medium">Export</span>
-            </button>
-            <button
-              onClick={handleAdd}
-              className="flex items-center space-x-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md"
-            >
-              <Plus className="w-5 h-5" />
-              <span className="font-medium">New Quotation</span>
+              <Download className="w-5 h-5" strokeWidth={2.5} />
+              <span>Export</span>
             </button>
           </div>
         </div>
@@ -358,17 +382,17 @@ const Quotations = () => {
 
       {/* Active Filters Display */}
       {filters.status && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-sm text-blue-800">
-            <AlertCircle className="w-4 h-4" />
-            <span className="font-medium">Active Filters:</span>
-            <span className="px-2 py-1 bg-blue-100 rounded capitalize">
+        <div className="bg-[#FFD54F]/20 border-2 border-[#FFD54F] rounded-2xl p-4 flex items-center justify-between shadow-md">
+          <div className="flex items-center space-x-2 text-sm text-[#800000]">
+            <AlertCircle className="w-4 h-4" strokeWidth={2.5} />
+            <span className="font-bold">Active Filters:</span>
+            <span className="px-3 py-1 bg-[#FFD54F] rounded-xl capitalize font-bold">
               Status: {filters.status}
             </span>
           </div>
           <button
             onClick={() => dispatch(clearFilters())}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            className="text-[#A60000] hover:text-[#800000] text-sm font-bold"
           >
             Clear All
           </button>
@@ -387,22 +411,22 @@ const Quotations = () => {
 
       {/* Pagination */}
       {pagination.lastPage > 1 && (
-        <div className="bg-white rounded-xl shadow-md p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-5 border border-[#FFD54F]/20">
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 font-semibold">
               Showing{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-bold text-gray-900">
                 {(pagination.currentPage - 1) * pagination.perPage + 1}
               </span>{" "}
               to{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-bold text-gray-900">
                 {Math.min(
                   pagination.currentPage * pagination.perPage,
                   pagination.total
                 )}
               </span>{" "}
               of{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-bold text-gray-900">
                 {pagination.total}
               </span>{" "}
               quotations
@@ -412,7 +436,7 @@ const Quotations = () => {
               <button
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                 disabled={pagination.currentPage === 1}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-sm font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Previous
               </button>
@@ -430,10 +454,10 @@ const Quotations = () => {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        className={`px-4 py-2 text-sm font-bold rounded-xl transition-all ${
                           pagination.currentPage === page
-                            ? "bg-green-600 text-white"
-                            : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
+                            ? "bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white shadow-lg"
+                            : "text-gray-700 bg-white border-2 border-gray-300 hover:bg-gray-50"
                         }`}
                       >
                         {page}
@@ -443,7 +467,11 @@ const Quotations = () => {
                     page === pagination.currentPage - 2 ||
                     page === pagination.currentPage + 2
                   ) {
-                    return <span key={page}>...</span>;
+                    return (
+                      <span key={page} className="font-bold">
+                        ...
+                      </span>
+                    );
                   }
                   return null;
                 })}
@@ -452,7 +480,7 @@ const Quotations = () => {
               <button
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 disabled={pagination.currentPage === pagination.lastPage}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-sm font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Next
               </button>
@@ -537,26 +565,29 @@ const ViewQuotationModal = ({ quotation, onClose, onEdit, onAccept }) => {
   const isExpired = new Date(quotation.valid_until) < new Date();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl my-8 max-h-[90vh] overflow-hidden">
-        <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Eye className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Quotation Details</h2>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl my-8 max-h-[90vh] overflow-hidden border-4 border-[#FFD54F]">
+        <div className="bg-gradient-to-r from-[#A60000] via-[#800000] to-[#FFB200] px-6 py-4 flex items-center justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFD54F] opacity-20 rounded-full blur-2xl"></div>
+          <div className="relative flex items-center space-x-3">
+            <Eye className="w-6 h-6 text-white" strokeWidth={2.5} />
+            <h2 className="text-xl font-bold text-white tracking-wide border-l-4 border-[#FFD54F] pl-3">
+              Quotation Details
+            </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="relative p-2 hover:bg-white/20 rounded-xl transition-all"
           >
-            <X className="w-6 h-6 text-white" />
+            <X className="w-6 h-6 text-white" strokeWidth={2.5} />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)] bg-[#FFF8F6]">
           <div className="space-y-6">
             {/* Basic Info */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-bold text-[#800000] mb-5 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 Basic Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -604,11 +635,11 @@ const ViewQuotationModal = ({ quotation, onClose, onEdit, onAccept }) => {
 
             {/* Notes */}
             {quotation.notes && (
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="border-t-2 border-[#FFD54F]/30 pt-6">
+                <h3 className="text-lg font-bold text-[#800000] mb-4 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                   Notes
                 </h3>
-                <p className="text-gray-700 whitespace-pre-wrap">
+                <p className="text-gray-700 whitespace-pre-wrap font-medium">
                   {quotation.notes}
                 </p>
               </div>
@@ -616,17 +647,17 @@ const ViewQuotationModal = ({ quotation, onClose, onEdit, onAccept }) => {
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-end space-x-3">
+        <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-[#FFF8F6] border-t-2 border-[#FFD54F]/30 flex items-center justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"
+            className="px-6 py-3 border-2 border-[#A60000] text-[#A60000] font-bold rounded-xl hover:bg-[#A60000] hover:text-white transition-all tracking-wide"
           >
             Close
           </button>
           {quotation.status === "draft" && (
             <button
               onClick={onEdit}
-              className="px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-[#A60000]/50 transition-all tracking-wide border-2 border-white"
             >
               Edit Quotation
             </button>
@@ -634,9 +665,9 @@ const ViewQuotationModal = ({ quotation, onClose, onEdit, onAccept }) => {
           {quotation.status === "sent" && !isExpired && (
             <button
               onClick={onAccept}
-              className="px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+              className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-700 text-white font-bold rounded-xl hover:shadow-xl hover:shadow-green-500/40 transition-all flex items-center space-x-2 tracking-wide"
             >
-              <CheckCircle className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" strokeWidth={2.5} />
               <span>Accept & Create Booking</span>
             </button>
           )}
@@ -649,35 +680,47 @@ const ViewQuotationModal = ({ quotation, onClose, onEdit, onAccept }) => {
 // Delete Confirmation Modal
 const DeleteConfirmModal = ({ quotation, onConfirm, onCancel, loading }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md border-4 border-red-300">
         <div className="p-6">
-          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Trash2 className="w-6 h-6 text-red-600" />
+          <div className="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+            <Trash2 className="w-8 h-8 text-white" strokeWidth={2.5} />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-3 tracking-wide">
             Delete Quotation?
           </h2>
-          <p className="text-gray-600 text-center mb-6">
+          <p className="text-gray-600 text-center mb-6 font-medium">
             Are you sure you want to delete quotation{" "}
-            <span className="font-semibold">{quotation.quotation_code}</span>?
-            This action cannot be undone.
+            <span className="font-bold text-[#A60000]">
+              {quotation.quotation_code}
+            </span>
+            ? This action cannot be undone.
           </p>
         </div>
-        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-end space-x-3">
+        <div className="px-6 py-4 bg-gray-50 border-t-2 flex items-center justify-end space-x-3">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+            className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 tracking-wide"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+            className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold rounded-xl hover:shadow-xl hover:shadow-red-500/40 transition-all disabled:from-red-300 disabled:to-red-400 flex items-center space-x-2 tracking-wide"
           >
-            {loading ? "Deleting..." : "Delete"}
+            {loading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Deleting...</span>
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-5 h-5" strokeWidth={2.5} />
+                <span>Delete</span>
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -688,35 +731,47 @@ const DeleteConfirmModal = ({ quotation, onConfirm, onCancel, loading }) => {
 // Accept Confirmation Modal
 const AcceptConfirmModal = ({ quotation, onConfirm, onCancel, loading }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md border-4 border-green-300">
         <div className="p-6">
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-6 h-6 text-green-600" />
+          <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+            <CheckCircle className="w-8 h-8 text-white" strokeWidth={2.5} />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-3 tracking-wide">
             Accept Quotation?
           </h2>
-          <p className="text-gray-600 text-center mb-6">
+          <p className="text-gray-600 text-center mb-6 font-medium">
             This will accept quotation{" "}
-            <span className="font-semibold">{quotation.quotation_code}</span>{" "}
+            <span className="font-bold text-[#A60000]">
+              {quotation.quotation_code}
+            </span>{" "}
             and automatically create a booking. Do you want to proceed?
           </p>
         </div>
-        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-end space-x-3">
+        <div className="px-6 py-4 bg-gray-50 border-t-2 flex items-center justify-end space-x-3">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+            className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 tracking-wide"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+            className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-700 text-white font-bold rounded-xl hover:shadow-xl hover:shadow-green-500/40 transition-all disabled:from-green-300 disabled:to-green-400 flex items-center space-x-2 tracking-wide"
           >
-            {loading ? "Processing..." : "Accept & Create Booking"}
+            {loading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-5 h-5" strokeWidth={2.5} />
+                <span>Accept & Create Booking</span>
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -727,10 +782,10 @@ const AcceptConfirmModal = ({ quotation, onConfirm, onCancel, loading }) => {
 // Info Field Component
 const InfoField = ({ label, value, className = "" }) => (
   <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
+    <label className="block text-sm font-bold text-gray-600 mb-1 tracking-wide">
       {label}
     </label>
-    <p className={`text-gray-900 ${className}`}>{value}</p>
+    <p className={`text-gray-900 font-semibold ${className}`}>{value}</p>
   </div>
 );
 

@@ -1,4 +1,4 @@
-// src/pages/hallBooking/CreateBooking.jsx
+// src/pages/hallBooking/CreateBooking.jsx - Clean & Easy to Understand
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -26,30 +26,31 @@ import {
   AlertCircle,
   CheckCircle,
   Building2,
+  FileText,
+  DollarSign,
 } from "lucide-react";
 import { fetchBookingSettings } from "../../features/systemSettings/systemSettingsSlice";
-
 
 const CreateBooking = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-
-const {
-    bookingSettings,
-    loading: settingsLoading,
-  } = useSelector((state) => state.systemSettings);
+  const { bookingSettings, loading: settingsLoading } = useSelector(
+    (state) => state.systemSettings
+  );
 
   // Load settings on mount
   useEffect(() => {
     dispatch(fetchBookingSettings());
   }, [dispatch]);
-   const timeSlots = bookingSettings.time_slots || [];
-   const bookingTypes = bookingSettings.booking_types || [];
-   const customerTypes = bookingSettings.customer_types || [];
-   const bookingStatuses = bookingSettings.booking_statuses || [];
-   const minDinnerTables = bookingSettings.min_dinner_tables || 50;
+
+  const timeSlots = bookingSettings.time_slots || [];
+  const bookingTypes = bookingSettings.booking_types || [];
+  const customerTypes = bookingSettings.customer_types || [];
+  const bookingStatuses = bookingSettings.booking_statuses || [];
+  const minDinnerTables = bookingSettings.min_dinner_tables || 50;
+
   // Get pre-filled data from calendar selection
   const prefilledData = location.state?.prefilledData || {};
 
@@ -235,13 +236,12 @@ const {
       if (!dinnerPackageData.catering_vendor_id) {
         newErrors.catering_vendor = "Catering vendor is required";
       }
-     if (
-  !dinnerPackageData.number_of_tables ||
-  dinnerPackageData.number_of_tables < minDinnerTables 
-) {
-  newErrors.number_of_tables =
-    `Minimum ${minDinnerTables} tables required for dinner package`;  
-}
+      if (
+        !dinnerPackageData.number_of_tables ||
+        dinnerPackageData.number_of_tables < minDinnerTables
+      ) {
+        newErrors.number_of_tables = `Minimum ${minDinnerTables} tables required for dinner package`;
+      }
     }
 
     setErrors(newErrors);
@@ -311,62 +311,60 @@ const {
   };
 
   return (
-    <div className="space-y-6 font-inter">
-      {/* Decorative Background Pattern */}
-      <div className="fixed inset-0 pointer-events-none opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0icGF0dGVybiIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjIwIiBmaWxsPSIjQTYwMDAwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+')] -z-10"></div>
-
-      {/* Header with Gold-Red Gradient */}
-      <div className="relative bg-gradient-to-br from-[#A60000] via-[#800000] to-[#FFB200] rounded-2xl p-8 shadow-2xl overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFD54F] opacity-10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#FFB200] opacity-10 rounded-full blur-3xl"></div>
-
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={handleCancel}
-              className="p-3 hover:bg-white/20 rounded-xl transition-all border-2 border-[#FFD54F]/50 backdrop-blur-sm"
-            >
-              <ArrowLeft className="w-6 h-6 text-white" strokeWidth={2.5} />
-            </button>
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-1 tracking-wide border-l-4 border-[#FFD54F] pl-3">
-                Create New Booking
-              </h1>
-              <p className="text-[#FFD54F] font-medium tracking-wide">
-                Fill in the booking details below
-              </p>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleCancel}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center shadow-sm">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Create New Booking
+                </h1>
+                <p className="text-sm text-gray-600">
+                  Fill in the details below to create a booking
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Form */}
-      <div className="bg-white rounded-2xl shadow-xl border-2 border-[#FFD54F]/30">
-        <form onSubmit={handleSubmit} className="p-8 space-y-8">
-          {/* Basic Information */}
-          <div>
-            <h3 className="text-xl font-bold text-[#800000] mb-6 flex items-center tracking-wide border-l-4 border-[#FFD54F] pl-3">
-              <Building2
-                className="w-6 h-6 mr-3 text-[#FFD54F]"
-                strokeWidth={2.5}
-              />
-              Basic Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Step 1: Customer & Booking Type */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-2 mb-4 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                1
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Customer Information
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Customer */}
               <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Customer <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="customer_id"
                   value={formData.customer_id}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
                     errors.customer_id
-                      ? "border-red-500"
-                      : "border-[#FFD54F]/50"
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-300"
                   }`}
                 >
                   <option value="">Select Customer</option>
@@ -377,7 +375,7 @@ const {
                   ))}
                 </select>
                 {errors.customer_id && (
-                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.customer_id}
                   </p>
@@ -386,14 +384,14 @@ const {
 
               {/* Booking Type */}
               <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Booking Type <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="booking_type"
                   value={formData.booking_type}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 >
                   {bookingTypes.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -402,86 +400,109 @@ const {
                   ))}
                 </select>
               </div>
+            </div>
+          </div>
 
-              {/* Hall */}
-              <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
-                  Hall <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="hall_id"
-                  value={formData.hall_id}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
-                    errors.hall_id ? "border-red-500" : "border-[#FFD54F]/50"
-                  }`}
-                >
-                  <option value="">Select Hall</option>
-                  {halls.map((hall) => (
-                    <option key={hall.id} value={hall.id}>
-                      {hall.hall_name} (RM {hall.base_price_external})
-                    </option>
-                  ))}
-                </select>
-                {errors.hall_id && (
-                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.hall_id}
-                  </p>
-                )}
+          {/* Step 2: Date, Time & Hall */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-2 mb-4 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                2
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Date, Time & Venue
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Hall */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Hall <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="hall_id"
+                    value={formData.hall_id}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+                      errors.hall_id
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    <option value="">Select Hall</option>
+                    {halls.map((hall) => (
+                      <option key={hall.id} value={hall.id}>
+                        {hall.hall_name} (RM {hall.base_price_external})
+                      </option>
+                    ))}
+                  </select>
+                  {errors.hall_id && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {errors.hall_id}
+                    </p>
+                  )}
+                </div>
+
+                {/* Event Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Event Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="event_date"
+                    value={formData.event_date}
+                    onChange={handleChange}
+                    min={new Date().toISOString().split("T")[0]}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+                      errors.event_date
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {errors.event_date && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {errors.event_date}
+                    </p>
+                  )}
+                </div>
+
+                {/* Time Slot */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Time Slot <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="time_slot"
+                    value={formData.time_slot}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+                      errors.time_slot
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {timeSlots.map((slot) => (
+                      <option key={slot.value} value={slot.value}>
+                        {slot.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.time_slot && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {errors.time_slot}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              {/* Event Date */}
-              <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
-                  Event Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="event_date"
-                  value={formData.event_date}
-                  onChange={handleChange}
-                  min={new Date().toISOString().split("T")[0]}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
-                    errors.event_date ? "border-red-500" : "border-[#FFD54F]/50"
-                  }`}
-                />
-                {errors.event_date && (
-                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.event_date}
-                  </p>
-                )}
-              </div>
-
-              {/* Time Slot */}
-              <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
-                  Time Slot <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="time_slot"
-                  value={formData.time_slot}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
-                    errors.time_slot ? "border-red-500" : "border-[#FFD54F]/50"
-                  }`}
-                >
-                  {timeSlots.map((slot) => (
-                    <option key={slot.value} value={slot.value}>
-                      {slot.label}
-                    </option>
-                  ))}
-                </select>
-                {errors.time_slot && (
-                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.time_slot}
-                  </p>
-                )}
-              </div>
               {/* Check Availability Button */}
-              <div className="md:col-span-2">
+              <div className="flex items-center space-x-3">
                 <button
                   type="button"
                   onClick={handleCheckAvailability}
@@ -491,19 +512,16 @@ const {
                     !formData.time_slot ||
                     checkingAvailability
                   }
-                  className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#FFB200] to-[#FFD54F] text-[#800000] font-bold rounded-xl hover:shadow-xl hover:shadow-[#FFD54F]/50 transition-all disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2 tracking-wide border-2 border-white"
+                  className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2"
                 >
                   {checkingAvailability ? (
                     <>
-                      <Loader2
-                        className="w-6 h-6 animate-spin"
-                        strokeWidth={2.5}
-                      />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Checking...</span>
                     </>
                   ) : (
                     <>
-                      <CheckCircle className="w-6 h-6" strokeWidth={2.5} />
+                      <CheckCircle className="w-4 h-4" />
                       <span>Check Availability</span>
                     </>
                   )}
@@ -511,46 +529,76 @@ const {
 
                 {/* Availability Status */}
                 {availabilityChecked && availability?.available && (
-                  <div className="mt-4 flex items-center space-x-2 text-green-600 bg-green-50 p-4 rounded-xl border-2 border-green-300">
-                    <CheckCircle className="w-6 h-6" strokeWidth={2.5} />
-                    <span className="font-bold tracking-wide">
+                  <div className="flex items-center space-x-2 text-green-600 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="font-medium text-sm">
                       Hall is available!
                     </span>
                   </div>
                 )}
 
                 {availability?.available === false && (
-                  <div className="mt-4 flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-xl border-2 border-red-300">
-                    <AlertCircle className="w-6 h-6" strokeWidth={2.5} />
-                    <span className="font-bold tracking-wide">
+                  <div className="flex items-center space-x-2 text-red-600 bg-red-50 px-4 py-2 rounded-lg border border-red-200">
+                    <AlertCircle className="w-5 h-5" />
+                    <span className="font-medium text-sm">
                       {availability.message}
                     </span>
                   </div>
                 )}
+              </div>
 
-                {errors.availability && (
-                  <p className="mt-4 text-sm text-red-600 flex items-center bg-red-50 p-4 rounded-xl border-2 border-red-300 font-semibold">
-                    <AlertCircle className="w-5 h-5 mr-2" strokeWidth={2.5} />
-                    {errors.availability}
-                  </p>
-                )}
+              {errors.availability && (
+                <p className="text-sm text-red-600 flex items-center bg-red-50 px-4 py-2 rounded-lg border border-red-200">
+                  <AlertCircle className="w-4 h-4 mr-2" />
+                  {errors.availability}
+                </p>
+              )}
+
+              {/* Start & End Time */}
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Start Time <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    name="start_time"
+                    value={formData.start_time}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    End Time <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    name="end_time"
+                    value={formData.end_time}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Event Details */}
-          <div>
-            <h3 className="text-xl font-bold text-[#800000] mb-6 flex items-center tracking-wide border-l-4 border-[#FFD54F] pl-3">
-              <Calendar
-                className="w-6 h-6 mr-3 text-[#FFD54F]"
-                strokeWidth={2.5}
-              />
-              Event Details
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Step 3: Event Details */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-2 mb-4 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                3
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Event Details
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Event Type */}
               <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Event Type <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -558,13 +606,15 @@ const {
                   name="event_type"
                   value={formData.event_type}
                   onChange={handleChange}
-                  placeholder="e.g., Wedding, Birthday"
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
-                    errors.event_type ? "border-red-500" : "border-[#FFD54F]/50"
+                  placeholder="e.g., Wedding, Birthday Party"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+                    errors.event_type
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-300"
                   }`}
                 />
                 {errors.event_type && (
-                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.event_type}
                   </p>
@@ -573,7 +623,7 @@ const {
 
               {/* Guest Count */}
               <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Expected Guests <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -582,80 +632,61 @@ const {
                   value={formData.guest_count}
                   onChange={handleChange}
                   min="1"
-                  placeholder="Expected guests"
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                  placeholder="Number of guests"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
                     errors.guest_count
-                      ? "border-red-500"
-                      : "border-[#FFD54F]/50"
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-300"
                   }`}
                 />
                 {errors.guest_count && (
-                  <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.guest_count}
                   </p>
                 )}
               </div>
-
-              {/* Start Time */}
-              <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
-                  Start Time <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="time"
-                  name="start_time"
-                  value={formData.start_time}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
-                />
-              </div>
-
-              {/* End Time */}
-              <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
-                  End Time <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="time"
-                  name="end_time"
-                  value={formData.end_time}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
-                />
-              </div>
             </div>
           </div>
 
-          {/* Additional Items */}
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-[#800000] flex items-center tracking-wide border-l-4 border-[#FFD54F] pl-3">
-                <Plus
-                  className="w-6 h-6 mr-3 text-[#FFD54F]"
-                  strokeWidth={2.5}
-                />
-                Additional Items
-              </h3>
+          {/* Step 4: Additional Items */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                  4
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Additional Items (Optional)
+                </h2>
+              </div>
               <button
                 type="button"
                 onClick={handleAddItem}
-                className="px-6 py-3 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white rounded-xl hover:shadow-lg hover:shadow-[#A60000]/30 transition-all flex items-center space-x-2 font-bold tracking-wide"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2 text-sm font-medium"
               >
-                <Plus className="w-5 h-5" strokeWidth={2.5} />
+                <Plus className="w-4 h-4" />
                 <span>Add Item</span>
               </button>
             </div>
 
-            {selectedItems.length > 0 && (
-              <div className="space-y-4">
+            {selectedItems.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Plus className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+                <p className="text-sm">No additional items added yet</p>
+                <p className="text-xs mt-1">
+                  Click "Add Item" to include extra services
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
                 {selectedItems.map((item, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-1 md:grid-cols-12 gap-4 p-5 bg-gradient-to-r from-[#FFF8F6] to-white rounded-2xl border-2 border-[#FFD54F]/30 shadow-md"
+                    className="grid grid-cols-12 gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200"
                   >
                     {/* Billing Item */}
-                    <div className="md:col-span-4">
+                    <div className="col-span-5">
                       <select
                         value={item.billing_item_id}
                         onChange={(e) =>
@@ -665,7 +696,7 @@ const {
                             e.target.value
                           )
                         }
-                        className="w-full px-3 py-2.5 border-2 border-[#FFD54F]/50 rounded-xl bg-white font-medium"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
                       >
                         <option value="">Select Item</option>
                         {billingItems.map((bi) => (
@@ -677,7 +708,7 @@ const {
                     </div>
 
                     {/* Quantity */}
-                    <div className="md:col-span-2">
+                    <div className="col-span-2">
                       <input
                         type="number"
                         value={item.quantity}
@@ -686,12 +717,12 @@ const {
                         }
                         min="1"
                         placeholder="Qty"
-                        className="w-full px-3 py-2.5 border-2 border-[#FFD54F]/50 rounded-xl bg-white font-medium"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
                       />
                     </div>
 
                     {/* Unit Price */}
-                    <div className="md:col-span-2">
+                    <div className="col-span-2">
                       <input
                         type="number"
                         value={item.unit_price}
@@ -700,31 +731,31 @@ const {
                         }
                         step="0.01"
                         placeholder="Price"
-                        className="w-full px-3 py-2.5 border-2 border-[#FFD54F]/50 rounded-xl bg-white font-medium"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
                       />
                     </div>
 
                     {/* Remarks */}
-                    <div className="md:col-span-3">
+                    <div className="col-span-2">
                       <input
                         type="text"
                         value={item.remarks}
                         onChange={(e) =>
                           handleItemChange(index, "remarks", e.target.value)
                         }
-                        placeholder="Remarks (optional)"
-                        className="w-full px-3 py-2.5 border-2 border-[#FFD54F]/50 rounded-xl bg-white font-medium"
+                        placeholder="Notes"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
                       />
                     </div>
 
                     {/* Remove Button */}
-                    <div className="md:col-span-1 flex items-center">
+                    <div className="col-span-1 flex items-center justify-center">
                       <button
                         type="button"
                         onClick={() => handleRemoveItem(index)}
-                        className="p-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-all border-2 border-red-300"
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
-                        <Trash2 className="w-5 h-5" strokeWidth={2.5} />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -733,30 +764,32 @@ const {
             )}
           </div>
 
-          {/* Dinner Package (if applicable) */}
+          {/* Step 5: Dinner Package (if applicable) */}
           {formData.booking_type === "with_dinner" && (
-            <div>
-              <h3 className="text-xl font-bold text-[#800000] mb-6 flex items-center tracking-wide border-l-4 border-[#FFD54F] pl-3">
-                <Users
-                  className="w-6 h-6 mr-3 text-[#FFD54F]"
-                  strokeWidth={2.5}
-                />
-                Dinner Package Details
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center space-x-2 mb-4 pb-4 border-b border-gray-200">
+                <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                  5
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Dinner Package Details
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Dinner Package */}
                 <div>
-                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Dinner Package <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="dinner_package_id"
                     value={dinnerPackageData.dinner_package_id}
                     onChange={handleDinnerPackageChange}
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
                       errors.dinner_package
-                        ? "border-red-500"
-                        : "border-[#FFD54F]/50"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                     }`}
                   >
                     <option value="">Select Package</option>
@@ -768,7 +801,7 @@ const {
                     ))}
                   </select>
                   {errors.dinner_package && (
-                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
                       <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.dinner_package}
                     </p>
@@ -777,17 +810,17 @@ const {
 
                 {/* Catering Vendor */}
                 <div>
-                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Catering Vendor <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="catering_vendor_id"
                     value={dinnerPackageData.catering_vendor_id}
                     onChange={handleDinnerPackageChange}
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
                       errors.catering_vendor
-                        ? "border-red-500"
-                        : "border-[#FFD54F]/50"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                     }`}
                   >
                     <option value="">Select Vendor</option>
@@ -798,42 +831,42 @@ const {
                     ))}
                   </select>
                   {errors.catering_vendor && (
-                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
                       <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.catering_vendor}
                     </p>
                   )}
                 </div>
 
-               {/* Number of Tables */}
-<div>
-  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
-    Number of Tables <span className="text-red-500">*</span>
-  </label>
-  <input
-    type="number"
-    name="number_of_tables"
-    value={dinnerPackageData.number_of_tables}
-    onChange={handleDinnerPackageChange}
-    min={minDinnerTables}  
-    placeholder={`Minimum ${minDinnerTables} tables`}  
-    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium ${
-      errors.number_of_tables
-        ? "border-red-500"
-        : "border-[#FFD54F]/50"
-    }`}
-  />
-  {errors.number_of_tables && (
-    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
-      <AlertCircle className="w-4 h-4 mr-1" />
-      {errors.number_of_tables}
-    </p>
-  )}
-</div>
+                {/* Number of Tables */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Number of Tables <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="number_of_tables"
+                    value={dinnerPackageData.number_of_tables}
+                    onChange={handleDinnerPackageChange}
+                    min={minDinnerTables}
+                    placeholder={`Minimum ${minDinnerTables} tables`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+                      errors.number_of_tables
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {errors.number_of_tables && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {errors.number_of_tables}
+                    </p>
+                  )}
+                </div>
 
                 {/* Special Menu Requests */}
                 <div>
-                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Special Menu Requests
                   </label>
                   <textarea
@@ -841,54 +874,68 @@ const {
                     value={dinnerPackageData.special_menu_requests}
                     onChange={handleDinnerPackageChange}
                     rows="3"
-                    placeholder="Any special dietary requirements or menu preferences..."
-                    className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
+                    placeholder="Any dietary requirements..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   />
                 </div>
               </div>
             </div>
           )}
 
-          {/* Special Requests & Notes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Special Requests */}
-            <div>
-              <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
-                Special Requests
-              </label>
-              <textarea
-                name="special_requests"
-                value={formData.special_requests}
-                onChange={handleChange}
-                rows="4"
-                placeholder="Any special requests from customer..."
-                className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
-              />
+          {/* Step 6: Notes */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-2 mb-4 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-gray-400 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                {formData.booking_type === "with_dinner" ? "6" : "5"}
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Additional Notes (Optional)
+              </h2>
             </div>
 
-            {/* Internal Notes */}
-            <div>
-              <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
-                Internal Notes
-              </label>
-              <textarea
-                name="internal_notes"
-                value={formData.internal_notes}
-                onChange={handleChange}
-                rows="4"
-                placeholder="Internal notes (not visible to customer)..."
-                className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] bg-[#FFF8F6] font-medium"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Special Requests */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Special Requests
+                </label>
+                <textarea
+                  name="special_requests"
+                  value={formData.special_requests}
+                  onChange={handleChange}
+                  rows="4"
+                  placeholder="Any special requests from customer..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                />
+              </div>
+
+              {/* Internal Notes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Internal Notes
+                </label>
+                <textarea
+                  name="internal_notes"
+                  value={formData.internal_notes}
+                  onChange={handleChange}
+                  rows="4"
+                  placeholder="Internal notes (not visible to customer)..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Total */}
-          <div className="bg-gradient-to-br from-[#FFD54F]/30 to-[#FFB200]/30 border-4 border-[#FFD54F] rounded-2xl p-8 shadow-lg">
+          {/* Total Summary */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-red-600">
             <div className="flex items-center justify-between">
-              <span className="text-xl font-bold text-[#800000] tracking-wide">
-                Estimated Total:
-              </span>
-              <span className="text-4xl font-bold text-[#A60000] tracking-wide">
+              <div className="flex items-center space-x-3">
+                <DollarSign className="w-8 h-8 text-red-600" />
+                <span className="text-lg font-semibold text-gray-900">
+                  Estimated Total
+                </span>
+              </div>
+              <span className="text-3xl font-bold text-red-600">
                 RM {calculateTotal()}
               </span>
             </div>
@@ -896,40 +943,35 @@ const {
 
           {/* Error Message */}
           {errors.submit && (
-            <div className="bg-red-50 border-4 border-red-300 rounded-2xl p-6 flex items-start space-x-3 shadow-lg">
-              <AlertCircle
-                className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5"
-                strokeWidth={2.5}
-              />
-              <p className="text-sm text-red-600 font-semibold">
-                {errors.submit}
-              </p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700">{errors.submit}</p>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end space-x-4 pt-8 border-t-2 border-[#FFD54F]/30">
+          <div className="flex items-center justify-end space-x-3 pt-4">
             <button
               type="button"
               onClick={handleCancel}
               disabled={loading}
-              className="px-8 py-4 border-2 border-[#A60000] text-[#A60000] font-bold rounded-xl hover:bg-[#A60000] hover:text-white transition-all disabled:opacity-50 tracking-wide"
+              className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !availabilityChecked}
-              className="px-8 py-4 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-[#A60000]/50 transition-all disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center space-x-2 tracking-wide border-2 border-white"
+              className="px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-6 h-6 animate-spin" strokeWidth={2.5} />
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   <span>Creating...</span>
                 </>
               ) : (
                 <>
-                  <Save className="w-6 h-6" strokeWidth={2.5} />
+                  <Save className="w-5 h-5" />
                   <span>Create Booking</span>
                 </>
               )}

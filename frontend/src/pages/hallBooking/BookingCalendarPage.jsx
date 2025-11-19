@@ -1,4 +1,4 @@
-// src/pages/hallBooking/BookingCalendarPage.jsx
+// src/pages/hallBooking/BookingCalendarPage.jsx - Clean White Design
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -244,28 +244,28 @@ const BookingCalendarPage = () => {
   ];
 
   return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 overflow-hidden flex flex-col">
-      <div className="max-w-[1600px] mx-auto w-full flex flex-col h-full">
-        {/* Compact Header */}
-        <div className="mb-3 flex-shrink-0">
-          <div className="bg-white rounded-xl p-3 shadow-md border border-gray-200">
+    <div className="h-screen bg-gray-50 p-4 overflow-hidden">
+      <div className="max-w-7xl mx-auto h-full flex flex-col">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <button
                   onClick={handleBack}
-                  className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <ArrowLeft className="w-5 h-5 text-gray-600" />
                 </button>
-                <div className="w-10 h-10 bg-gradient-to-br from-red-700 to-red-900 rounded-lg flex items-center justify-center shadow-lg">
-                  <CalendarIcon className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <CalendarIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900">
-                    选择日期 Select Event Date
+                  <h1 className="text-xl font-bold text-gray-900">
+                    Select Event Date
                   </h1>
-                  <p className="text-xs text-gray-600">
-                    Choose date, hall, and time slot
+                  <p className="text-sm text-gray-600">
+                    Choose date, hall, and time slot · 选择日期和时段
                   </p>
                 </div>
               </div>
@@ -274,11 +274,11 @@ const BookingCalendarPage = () => {
         </div>
 
         {/* Main Grid - Calendar + Selection */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 flex-1 min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
           {/* Calendar Section - 2 columns */}
-          <div className="xl:col-span-2 flex flex-col space-y-3 min-h-0">
-            {/* Compact Month Navigation */}
-            <div className="bg-white rounded-xl p-2 shadow-md border border-gray-200 flex-shrink-0">
+          <div className="lg:col-span-2 space-y-4 flex flex-col min-h-0 overflow-hidden">
+            {/* Month Navigation */}
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <button
                   onClick={prevMonth}
@@ -287,7 +287,7 @@ const BookingCalendarPage = () => {
                   <ChevronLeft className="w-5 h-5 text-gray-700" />
                 </button>
                 <div className="text-center">
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-gray-900">
                     {monthNames[currentMonth.getMonth()]}{" "}
                     {currentMonth.getFullYear()}
                   </h2>
@@ -304,20 +304,20 @@ const BookingCalendarPage = () => {
               </div>
             </div>
 
-            {/* Calendar Grid - Flexible height */}
-            <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden flex-1 flex flex-col min-h-0">
-              {/* Compact Weekday Headers - RED TEMPLE COLORS */}
-              <div className="grid grid-cols-7 bg-gradient-to-r from-red-700 to-red-900 flex-shrink-0">
+            {/* Calendar Grid */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-1 flex flex-col min-h-0">
+              {/* Weekday Headers - Clean Gray */}
+              <div className="grid grid-cols-7 bg-gray-100 border-b border-gray-200">
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                   (day, idx) => (
                     <div
                       key={day}
-                      className="p-2 text-center border-r border-red-600 last:border-r-0"
+                      className="p-3 text-center border-r border-gray-200 last:border-r-0"
                     >
-                      <span className="text-xs font-bold text-white block">
+                      <span className="text-sm font-semibold text-gray-700 block">
                         {day}
                       </span>
-                      <span className="text-[10px] text-red-100">
+                      <span className="text-xs text-gray-500">
                         {["日", "一", "二", "三", "四", "五", "六"][idx]}
                       </span>
                     </div>
@@ -325,14 +325,14 @@ const BookingCalendarPage = () => {
                 )}
               </div>
 
-              {/* Calendar Days - Flexible grid */}
-              <div className="grid grid-cols-7 bg-white flex-1 auto-rows-fr">
+              {/* Calendar Days */}
+              <div className="grid grid-cols-7 bg-white flex-1 overflow-auto">
                 {days.map((date, index) => {
                   if (!date) {
                     return (
                       <div
                         key={`empty-${index}`}
-                        className="border border-gray-100"
+                        className="border border-gray-100 aspect-square"
                       />
                     );
                   }
@@ -349,8 +349,8 @@ const BookingCalendarPage = () => {
                       onClick={() => handleDateClick(date)}
                       disabled={isPast}
                       className={`
-                        border border-gray-100 flex flex-col items-center justify-center
-                        transition-all duration-200 relative group p-1 min-h-0
+                        border border-gray-100 aspect-square flex flex-col items-center justify-center
+                        transition-all duration-200 relative group p-2
                         ${
                           isPast
                             ? "bg-gray-50 text-gray-400 cursor-not-allowed"
@@ -363,7 +363,7 @@ const BookingCalendarPage = () => {
                         }
                         ${
                           isSelected
-                            ? "bg-gradient-to-br from-red-700 to-red-900 text-white shadow-lg scale-105 z-10"
+                            ? "bg-red-600 text-white shadow-lg ring-2 ring-red-600 ring-offset-2"
                             : ""
                         }
                       `}
@@ -376,27 +376,28 @@ const BookingCalendarPage = () => {
                         {date.getDate()}
                       </span>
 
-                      {/* Booking Indicator Dots - ORANGE */}
+                      {/* Booking Indicator Dots - Red */}
                       {hasEvents && !isSelected && (
-                        <div className="absolute bottom-1 flex gap-0.5">
+                        <div className="absolute bottom-2 flex gap-0.5">
                           {bookedDates[formatDate(date)]
                             .slice(0, 3)
                             .map((_, i) => (
                               <div
                                 key={i}
-                                className="w-1 h-1 rounded-full bg-orange-500"
+                                className="w-1.5 h-1.5 rounded-full bg-red-500"
                               />
                             ))}
                         </div>
                       )}
 
                       {isSelected && (
-                        <CheckCircle className="w-4 h-4 text-white absolute top-0.5 right-0.5" />
+                        <CheckCircle className="w-5 h-5 text-white absolute top-1 right-1" />
                       )}
 
+                      {/* Tooltip */}
                       {!isPast && !isSelected && (
                         <div className="absolute bottom-full mb-2 hidden group-hover:block z-10">
-                          <div className="bg-gray-900 text-white text-[10px] rounded px-2 py-1 whitespace-nowrap">
+                          <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-1.5 whitespace-nowrap shadow-lg">
                             {hasEvents
                               ? `${
                                   bookedDates[formatDate(date)].length
@@ -411,61 +412,66 @@ const BookingCalendarPage = () => {
               </div>
             </div>
 
-            {/* Compact Legend */}
-            <div className="bg-white rounded-xl p-2 shadow-md border border-gray-200 flex-shrink-0">
-              <div className="flex items-center justify-around flex-wrap gap-2">
-                <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 bg-white border-2 border-gray-300 rounded"></div>
-                  <span className="text-[10px] text-gray-700">Available</span>
+            {/* Legend */}
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+              <div className="flex items-center justify-around flex-wrap gap-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-white border-2 border-gray-300 rounded"></div>
+                  <span className="text-sm text-gray-700">Available</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 bg-gray-100 border-2 border-gray-300 rounded"></div>
-                  <span className="text-[10px] text-gray-700">Past</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-gray-100 border-2 border-gray-300 rounded"></div>
+                  <span className="text-sm text-gray-700">Past</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <div className="flex gap-0.5">
-                    <div className="w-1 h-1 rounded-full bg-orange-500"></div>
-                    <div className="w-1 h-1 rounded-full bg-orange-500"></div>
+                <div className="flex items-center space-x-2">
+                  <div className="flex gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
                   </div>
-                  <span className="text-[10px] text-gray-700">Bookings</span>
+                  <span className="text-sm text-gray-700">Has Bookings</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 bg-gradient-to-br from-red-700 to-red-900 rounded"></div>
-                  <span className="text-[10px] text-gray-700">Selected</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-red-600 rounded"></div>
+                  <span className="text-sm text-gray-700">Selected</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Selection Panel - RED TEMPLE COLORS */}
-          <div className="xl:col-span-1 flex flex-col min-h-0">
+          {/* Selection Panel - Clean White */}
+          <div className="lg:col-span-1 flex flex-col min-h-0">
             {selectedDate ? (
-              <div className="bg-gradient-to-br from-red-700 to-red-900 rounded-xl p-4 shadow-lg border border-red-600 flex flex-col min-h-0 h-full">
-                <h3 className="text-xs font-bold text-white mb-2 uppercase tracking-wide flex items-center flex-shrink-0">
-                  <CalendarIcon className="w-3 h-3 mr-1" />
-                  Selected Date 已选日期
-                </h3>
-                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 mb-3 flex-shrink-0">
-                  <p className="text-3xl font-bold text-white mb-0.5">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 flex flex-col h-full overflow-hidden">
+                <div className="flex items-center space-x-2 mb-4 pb-4 border-b border-gray-200">
+                  <CalendarIcon className="w-5 h-5 text-red-600" />
+                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                    Selected Date · 已选日期
+                  </h3>
+                </div>
+
+                {/* Selected Date Display */}
+                <div className="bg-red-50 rounded-lg p-4 mb-6 border border-red-100 flex-shrink-0">
+                  <p className="text-4xl font-bold text-red-600 mb-1">
                     {selectedDate.getDate()}
                   </p>
-                  <p className="text-base text-white/90 font-semibold">
+                  <p className="text-lg text-gray-900 font-semibold">
                     {monthNames[selectedDate.getMonth()]}
                   </p>
-                  <p className="text-sm text-white/80">
+                  <p className="text-sm text-gray-600">
                     {selectedDate.getFullYear()}
                   </p>
                 </div>
 
-                {/* Scrollable Section */}
-                <div className="flex-1 overflow-y-auto min-h-0 space-y-3 pr-1 custom-scrollbar">
-                  {/* Hall Selection */}
-                  <div>
-                    <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide flex items-center sticky top-0 bg-gradient-to-br from-red-700 to-red-900 pb-1">
-                      <Building2 className="w-3 h-3 mr-1" />
-                      Select Hall 选择大厅
-                    </h4>
-                    <div className="space-y-1.5">
+                {/* Hall Selection */}
+                <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+                  <div className="mb-6">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Building2 className="w-4 h-4 text-gray-600" />
+                      <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                        Select Hall · 选择大厅
+                      </h4>
+                    </div>
+                    <div className="space-y-2">
                       {halls.map((hall) => (
                         <button
                           key={hall.id}
@@ -474,37 +480,31 @@ const BookingCalendarPage = () => {
                             setSelectedTimeSlot(null);
                           }}
                           className={`
-                            w-full p-2 rounded-lg text-left transition-all duration-200
-                            ${
-                              selectedHall === hall.id
-                                ? "bg-white text-gray-900 shadow-lg"
-                                : "bg-white/20 text-white hover:bg-white/30"
-                            }
-                          `}
+                          w-full p-3 rounded-lg text-left transition-all duration-200 border-2
+                          ${
+                            selectedHall === hall.id
+                              ? "bg-red-50 border-red-600 shadow-sm"
+                              : "bg-gray-50 border-gray-200 hover:border-gray-300"
+                          }
+                        `}
                         >
                           <div className="flex items-center justify-between">
                             <div>
                               <p
-                                className={`font-bold text-xs ${
+                                className={`font-semibold text-sm ${
                                   selectedHall === hall.id
-                                    ? "text-gray-900"
-                                    : "text-white"
+                                    ? "text-red-700"
+                                    : "text-gray-900"
                                 }`}
                               >
                                 {hall.hall_name}
                               </p>
-                              <p
-                                className={`text-[10px] ${
-                                  selectedHall === hall.id
-                                    ? "text-gray-600"
-                                    : "text-white/80"
-                                }`}
-                              >
+                              <p className="text-xs text-gray-600">
                                 Capacity: {hall.capacity}
                               </p>
                             </div>
                             {selectedHall === hall.id && (
-                              <CheckCircle className="w-4 h-4 text-green-600" />
+                              <CheckCircle className="w-5 h-5 text-red-600" />
                             )}
                           </div>
                         </button>
@@ -514,62 +514,60 @@ const BookingCalendarPage = () => {
 
                   {/* Time Slot Selection */}
                   {selectedHall && (
-                    <div>
-                      <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide flex items-center sticky top-0 bg-gradient-to-br from-red-700 to-red-900 pb-1">
-                        <Clock className="w-3 h-3 mr-1" />
-                        Time Slot 时段
-                      </h4>
+                    <div className="mb-6">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Clock className="w-4 h-4 text-gray-600" />
+                        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                          Time Slot · 时段
+                        </h4>
+                      </div>
 
                       {checkingAvailability ? (
-                        <div className="bg-white/20 rounded-lg p-3 text-center">
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto mb-1"></div>
-                          <p className="text-white text-[10px]">Checking...</p>
+                        <div className="bg-gray-50 rounded-lg p-6 text-center border border-gray-200">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-2"></div>
+                          <p className="text-gray-600 text-sm">
+                            Checking availability...
+                          </p>
                         </div>
                       ) : (
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           {availableSlots.morning ? (
                             <button
                               onClick={() => setSelectedTimeSlot("morning")}
                               className={`
-                                w-full p-2 rounded-lg transition-all duration-200
-                                ${
-                                  selectedTimeSlot === "morning"
-                                    ? "bg-white text-gray-900 shadow-lg"
-                                    : "bg-white/20 text-white hover:bg-white/30"
-                                }
-                              `}
+                              w-full p-3 rounded-lg transition-all duration-200 border-2
+                              ${
+                                selectedTimeSlot === "morning"
+                                  ? "bg-red-50 border-red-600 shadow-sm"
+                                  : "bg-gray-50 border-gray-200 hover:border-gray-300"
+                              }
+                            `}
                             >
                               <div className="flex items-center justify-between">
                                 <div className="text-left">
                                   <p
-                                    className={`font-bold text-xs ${
+                                    className={`font-semibold text-sm ${
                                       selectedTimeSlot === "morning"
-                                        ? "text-gray-900"
-                                        : "text-white"
+                                        ? "text-red-700"
+                                        : "text-gray-900"
                                     }`}
                                   >
-                                    Morning 上午
+                                    Morning · 上午
                                   </p>
-                                  <p
-                                    className={`text-[10px] ${
-                                      selectedTimeSlot === "morning"
-                                        ? "text-gray-600"
-                                        : "text-white/80"
-                                    }`}
-                                  >
+                                  <p className="text-xs text-gray-600">
                                     9:00 AM - 2:00 PM
                                   </p>
                                 </div>
                                 {selectedTimeSlot === "morning" && (
-                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                  <CheckCircle className="w-5 h-5 text-red-600" />
                                 )}
                               </div>
                             </button>
                           ) : (
-                            <div className="bg-red-100/20 border border-red-300/30 rounded-lg p-2">
-                              <div className="flex items-center space-x-1.5">
-                                <XCircle className="w-3 h-3 text-red-200" />
-                                <p className="font-bold text-[10px] text-red-100">
+                            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-3">
+                              <div className="flex items-center space-x-2">
+                                <XCircle className="w-4 h-4 text-red-600" />
+                                <p className="font-semibold text-sm text-red-700">
                                   Morning Unavailable
                                 </p>
                               </div>
@@ -580,45 +578,39 @@ const BookingCalendarPage = () => {
                             <button
                               onClick={() => setSelectedTimeSlot("evening")}
                               className={`
-                                w-full p-2 rounded-lg transition-all duration-200
-                                ${
-                                  selectedTimeSlot === "evening"
-                                    ? "bg-white text-gray-900 shadow-lg"
-                                    : "bg-white/20 text-white hover:bg-white/30"
-                                }
-                              `}
+                              w-full p-3 rounded-lg transition-all duration-200 border-2
+                              ${
+                                selectedTimeSlot === "evening"
+                                  ? "bg-red-50 border-red-600 shadow-sm"
+                                  : "bg-gray-50 border-gray-200 hover:border-gray-300"
+                              }
+                            `}
                             >
                               <div className="flex items-center justify-between">
                                 <div className="text-left">
                                   <p
-                                    className={`font-bold text-xs ${
+                                    className={`font-semibold text-sm ${
                                       selectedTimeSlot === "evening"
-                                        ? "text-gray-900"
-                                        : "text-white"
+                                        ? "text-red-700"
+                                        : "text-gray-900"
                                     }`}
                                   >
-                                    Evening 晚上
+                                    Evening · 晚上
                                   </p>
-                                  <p
-                                    className={`text-[10px] ${
-                                      selectedTimeSlot === "evening"
-                                        ? "text-gray-600"
-                                        : "text-white/80"
-                                    }`}
-                                  >
+                                  <p className="text-xs text-gray-600">
                                     6:00 PM - 11:00 PM
                                   </p>
                                 </div>
                                 {selectedTimeSlot === "evening" && (
-                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                  <CheckCircle className="w-5 h-5 text-red-600" />
                                 )}
                               </div>
                             </button>
                           ) : (
-                            <div className="bg-red-100/20 border border-red-300/30 rounded-lg p-2">
-                              <div className="flex items-center space-x-1.5">
-                                <XCircle className="w-3 h-3 text-red-200" />
-                                <p className="font-bold text-[10px] text-red-100">
+                            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-3">
+                              <div className="flex items-center space-x-2">
+                                <XCircle className="w-4 h-4 text-red-600" />
+                                <p className="font-semibold text-sm text-red-700">
                                   Evening Unavailable
                                 </p>
                               </div>
@@ -629,32 +621,31 @@ const BookingCalendarPage = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Confirm Button - Fixed at bottom */}
+                {/* Confirm Button */}
                 {selectedDate && selectedHall && selectedTimeSlot && (
                   <button
                     onClick={handleConfirm}
-                    className="w-full bg-white text-red-800 font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center justify-center space-x-2 mt-3 flex-shrink-0"
+                    className="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-sm hover:bg-red-700 transition-all duration-200 flex items-center justify-center space-x-2 mt-4 flex-shrink-0"
                   >
-                    <CheckCircle className="w-4 h-4" />
-                    <span className="text-sm">Continue 继续预订</span>
+                    <CheckCircle className="w-5 h-5" />
+                    <span>Continue to Booking · 继续预订</span>
                   </button>
                 )}
               </div>
             ) : (
-              <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200 text-center flex flex-col items-center justify-center h-full">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-700 to-red-900 rounded-full mx-auto mb-3 flex items-center justify-center">
-                  <CalendarIcon className="w-8 h-8 text-white" />
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 text-center sticky top-4">
+                <div className="w-16 h-16 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <CalendarIcon className="w-8 h-8 text-red-600" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
                   Select a Date
                 </h3>
-                <p className="text-xs text-gray-600 mb-2">
+                <p className="text-sm text-gray-600 mb-3">
                   Click on an available date to begin
                 </p>
-                <div className="flex items-center justify-center space-x-1.5 text-red-700">
-                  <Sparkles className="w-3 h-3" />
-                  <span className="font-semibold text-xs">
+                <div className="flex items-center justify-center space-x-2 text-red-600">
+                  <Sparkles className="w-4 h-4" />
+                  <span className="font-medium text-sm">
                     选择一个日期开始预订
                   </span>
                 </div>
@@ -663,24 +654,24 @@ const BookingCalendarPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Custom Scrollbar Styles */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.5);
-        }
-      `}</style>
+      {/* At the end, before closing div */}
+      <style>{`
+  /* Custom scrollbar for selection panel */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #dc2626;
+    border-radius: 10px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #b91c1c;
+  }
+`}</style>
     </div>
   );
 };

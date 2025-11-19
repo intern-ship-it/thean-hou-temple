@@ -4,7 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCustomers } from "../../features/hallBooking/customersSlice";
 import { fetchHalls } from "../../features/hallBooking/hallsSlice";
 import { fetchBillingItems } from "../../features/hallBooking/billingItemsSlice";
-import { X, Save, Loader2, FileText, Plus, Trash2 } from "lucide-react";
+import {
+  X,
+  Save,
+  Loader2,
+  FileText,
+  Plus,
+  Trash2,
+  AlertCircle,
+} from "lucide-react";
 
 const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
   const dispatch = useDispatch();
@@ -61,7 +69,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
       if (quotation.quotation_items) {
         setSelectedItems(
           quotation.quotation_items
-            .filter((item) => item.billing_item !== null) // ✅ ADD THIS
+            .filter((item) => item.billing_item !== null)
             .map((item) => ({
               billing_item_id: item.billing_item.id,
               item_name: item.billing_item.item_name,
@@ -173,19 +181,20 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl my-8">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl my-8 border-4 border-[#FFD54F]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-              <FileText className="w-6 h-6 text-white" />
+        <div className="bg-gradient-to-r from-[#A60000] via-[#800000] to-[#FFB200] px-6 py-4 flex items-center justify-between rounded-t-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFD54F] opacity-20 rounded-full blur-2xl"></div>
+          <div className="relative flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#FFD54F] to-[#FFB200] rounded-xl flex items-center justify-center shadow-lg">
+              <FileText className="w-7 h-7 text-[#800000]" strokeWidth={2.5} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-2xl font-bold text-white tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 {quotation ? "Edit Quotation" : "Create New Quotation"}
               </h2>
-              <p className="text-sm text-green-100">
+              <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
                 Generate a quote for the customer
               </p>
             </div>
@@ -193,27 +202,27 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
           <button
             onClick={onClose}
             disabled={loading}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="relative p-2 hover:bg-white/20 rounded-xl transition-all"
           >
-            <X className="w-6 h-6 text-white" />
+            <X className="w-6 h-6 text-white" strokeWidth={2.5} />
           </button>
         </div>
 
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto"
+          className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto bg-[#FFF8F6]"
         >
           <div className="space-y-6">
             {/* Basic Information */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-bold text-[#800000] mb-5 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 Basic Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Customer */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Customer <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -221,8 +230,10 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                     value={formData.customer_id}
                     onChange={handleChange}
                     disabled={loading}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                      errors.customer_id ? "border-red-500" : "border-gray-300"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium ${
+                      errors.customer_id
+                        ? "border-red-500"
+                        : "border-[#FFD54F]/50"
                     }`}
                   >
                     <option value="">Select Customer</option>
@@ -233,15 +244,16 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                     ))}
                   </select>
                   {selectedCustomer && (
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-1 text-xs text-gray-600 font-semibold">
                       Type:{" "}
-                      <span className="font-semibold capitalize">
+                      <span className="capitalize text-[#A60000]">
                         {selectedCustomer.customer_type}
                       </span>
                     </p>
                   )}
                   {errors.customer_id && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" strokeWidth={2.5} />
                       {errors.customer_id}
                     </p>
                   )}
@@ -249,7 +261,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
 
                 {/* Hall */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Hall <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -257,8 +269,8 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                     value={formData.hall_id}
                     onChange={handleChange}
                     disabled={loading}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                      errors.hall_id ? "border-red-500" : "border-gray-300"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium ${
+                      errors.hall_id ? "border-red-500" : "border-[#FFD54F]/50"
                     }`}
                   >
                     <option value="">Select Hall</option>
@@ -269,7 +281,8 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                     ))}
                   </select>
                   {errors.hall_id && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" strokeWidth={2.5} />
                       {errors.hall_id}
                     </p>
                   )}
@@ -277,7 +290,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
 
                 {/* Quotation Type */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Quotation Type
                   </label>
                   <select
@@ -285,7 +298,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                     value={formData.quotation_type}
                     onChange={handleChange}
                     disabled={loading}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium"
                   >
                     <option value="standard">Standard Hall Rental</option>
                     <option value="dinner_package">Dinner Package</option>
@@ -294,7 +307,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
 
                 {/* Event Date */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Event Date (Optional)
                   </label>
                   <input
@@ -304,13 +317,13 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                     onChange={handleChange}
                     min={new Date().toISOString().split("T")[0]}
                     disabled={loading}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium"
                   />
                 </div>
 
                 {/* Time Slot */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Time Slot (Optional)
                   </label>
                   <select
@@ -318,7 +331,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                     value={formData.time_slot}
                     onChange={handleChange}
                     disabled={loading}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium"
                   >
                     <option value="morning">Morning (9:00 AM - 2:00 PM)</option>
                     <option value="evening">
@@ -329,7 +342,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
 
                 {/* Valid Until */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Valid Until
                   </label>
                   <input
@@ -339,9 +352,9 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                     onChange={handleChange}
                     min={new Date().toISOString().split("T")[0]}
                     disabled={loading}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium"
                   />
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-gray-600 font-semibold">
                     Quotation will expire after this date
                   </p>
                 </div>
@@ -349,24 +362,24 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
             </div>
 
             {/* Items */}
-            <div>
+            <div className="border-t-2 border-[#FFD54F]/30 pt-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-bold text-[#800000] tracking-wide border-l-4 border-[#FFD54F] pl-3">
                   Quotation Items
                 </h3>
                 <button
                   type="button"
                   onClick={handleAddItem}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center space-x-2"
+                  className="px-4 py-2 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white rounded-xl font-bold hover:shadow-lg transition-all flex items-center space-x-2"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4" strokeWidth={2.5} />
                   <span>Add Item</span>
                 </button>
               </div>
 
               {selectedItems.length === 0 ? (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                  <p className="text-gray-500">
+                <div className="border-2 border-dashed border-[#FFD54F] rounded-2xl p-8 text-center bg-white">
+                  <p className="text-gray-500 font-medium">
                     No items added yet. Click "Add Item" to get started.
                   </p>
                 </div>
@@ -375,11 +388,11 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                   {selectedItems.map((item, index) => (
                     <div
                       key={index}
-                      className="border border-gray-200 rounded-lg p-4"
+                      className="border-2 border-[#FFD54F]/30 rounded-2xl p-4 bg-white shadow-md"
                     >
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                         <div className="md:col-span-5">
-                          <label className="block text-xs font-medium text-gray-700 mb-1">
+                          <label className="block text-xs font-bold text-gray-700 mb-1">
                             Item
                           </label>
                           <select
@@ -391,7 +404,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                                 e.target.value
                               )
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="w-full px-3 py-2 border-2 border-[#FFD54F]/50 rounded-xl text-sm font-medium"
                           >
                             <option value="">Select Item</option>
                             {billingItems.map((bi) => (
@@ -402,7 +415,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                           </select>
                         </div>
                         <div className="md:col-span-2">
-                          <label className="block text-xs font-medium text-gray-700 mb-1">
+                          <label className="block text-xs font-bold text-gray-700 mb-1">
                             Quantity
                           </label>
                           <input
@@ -416,11 +429,11 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                               )
                             }
                             min="1"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="w-full px-3 py-2 border-2 border-[#FFD54F]/50 rounded-xl text-sm font-medium"
                           />
                         </div>
                         <div className="md:col-span-2">
-                          <label className="block text-xs font-medium text-gray-700 mb-1">
+                          <label className="block text-xs font-bold text-gray-700 mb-1">
                             Unit Price
                           </label>
                           <input
@@ -434,11 +447,11 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                               )
                             }
                             step="0.01"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="w-full px-3 py-2 border-2 border-[#FFD54F]/50 rounded-xl text-sm font-medium"
                           />
                         </div>
                         <div className="md:col-span-2">
-                          <label className="block text-xs font-medium text-gray-700 mb-1">
+                          <label className="block text-xs font-bold text-gray-700 mb-1">
                             Subtotal
                           </label>
                           <input
@@ -447,21 +460,24 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                               item.quantity * item.unit_price
                             ).toFixed(2)}`}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50"
+                            className="w-full px-3 py-2 border-2 border-[#FFD54F]/50 rounded-xl text-sm font-bold bg-[#FFF8F6]"
                           />
                         </div>
                         <div className="md:col-span-1 flex items-end">
                           <button
                             type="button"
                             onClick={() => handleRemoveItem(index)}
-                            className="w-full p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="w-full p-2 text-red-600 hover:bg-red-50 rounded-xl transition-all border-2 border-red-300"
                           >
-                            <Trash2 className="w-4 h-4 mx-auto" />
+                            <Trash2
+                              className="w-4 h-4 mx-auto"
+                              strokeWidth={2.5}
+                            />
                           </button>
                         </div>
                       </div>
                       <div className="mt-3">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-bold text-gray-700 mb-1">
                           Remarks (Optional)
                         </label>
                         <input
@@ -471,7 +487,7 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                             handleItemChange(index, "remarks", e.target.value)
                           }
                           placeholder="Additional notes for this item..."
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          className="w-full px-3 py-2 border-2 border-[#FFD54F]/50 rounded-xl text-sm font-medium"
                         />
                       </div>
                     </div>
@@ -480,17 +496,20 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
               )}
 
               {errors.items && (
-                <p className="mt-2 text-sm text-red-600">{errors.items}</p>
+                <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" strokeWidth={2.5} />
+                  {errors.items}
+                </p>
               )}
             </div>
 
             {/* Notes */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="border-t-2 border-[#FFD54F]/30 pt-6">
+              <h3 className="text-lg font-bold text-[#800000] mb-5 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 Additional Information
               </h3>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Notes
                 </label>
                 <textarea
@@ -498,19 +517,19 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
                   value={formData.notes}
                   onChange={handleChange}
                   rows="4"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium"
                   placeholder="Terms and conditions, special notes, or additional information..."
                 />
               </div>
             </div>
 
             {/* Total */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="bg-gradient-to-br from-[#FFD54F]/30 to-[#FFB200]/30 border-4 border-[#FFD54F] rounded-2xl p-6 shadow-lg">
               <div className="flex items-center justify-between">
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="text-xl font-bold text-[#800000] tracking-wide">
                   Estimated Total:
                 </span>
-                <span className="text-2xl font-bold text-green-600">
+                <span className="text-4xl font-bold text-[#A60000] tracking-wide">
                   RM {calculateTotal()}
                 </span>
               </div>
@@ -519,12 +538,12 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
         </form>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-end space-x-3 rounded-b-2xl">
+        <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-[#FFF8F6] border-t-2 border-[#FFD54F]/30 flex items-center justify-end space-x-3 rounded-b-2xl">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"
+            className="px-6 py-3 border-2 border-[#A60000] text-[#A60000] font-bold rounded-xl hover:bg-[#A60000] hover:text-white transition-all tracking-wide"
           >
             Cancel
           </button>
@@ -532,16 +551,16 @@ const QuotationForm = ({ quotation, onSubmit, onClose, loading }) => {
             type="submit"
             onClick={handleSubmit}
             disabled={loading}
-            className="px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+            className="px-6 py-3 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-[#A60000]/50 transition-all disabled:from-gray-300 disabled:to-gray-400 flex items-center space-x-2 tracking-wide border-2 border-white"
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Saving...</span>
               </>
             ) : (
               <>
-                <Save className="w-5 h-5" />
+                <Save className="w-5 h-5" strokeWidth={2.5} />
                 <span>{quotation ? "Update" : "Create"} Quotation</span>
               </>
             )}

@@ -1,4 +1,4 @@
-// src/pages/hallBooking/Bookings.jsx
+// src/pages/hallBooking/Bookings.jsx - Clean White Design with Red Accents
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -133,172 +133,148 @@ const Bookings = () => {
   };
 
   return (
-    <div className="space-y-6 font-inter">
-      {/* Decorative Background Pattern */}
-      <div className="fixed inset-0 pointer-events-none opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0icGF0dGVybiIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjIwIiBmaWxsPSIjQTYwMDAwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+')] -z-10"></div>
-
-      {/* Header with Gold-Red Gradient */}
-      <div className="relative bg-gradient-to-br from-[#A60000] via-[#800000] to-[#FFB200] rounded-2xl p-8 text-white shadow-2xl overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFD54F] opacity-10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#FFB200] opacity-10 rounded-full blur-3xl"></div>
-
-        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6">
+      {/* Header Section - Clean White with Red Accent */}
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center space-x-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#FFD54F] to-[#FFB200] rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-              <Calendar className="w-8 h-8 text-[#800000]" strokeWidth={2.5} />
+            <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center shadow-md">
+              <Calendar className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold mb-1 tracking-wide border-l-4 border-[#FFD54F] pl-3">
+              <h1 className="text-2xl font-bold text-gray-900">
                 Hall Bookings
               </h1>
-              <p className="text-[#FFD54F] font-medium tracking-wide">
+              <p className="text-sm text-gray-500 mt-0.5">
                 Manage all hall bookings and reservations
               </p>
             </div>
           </div>
-          <div className="mt-4 sm:mt-0">
-            <button
-              onClick={handleAdd}
-              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#FFD54F] to-[#FFB200] text-[#800000] font-bold rounded-xl hover:shadow-2xl hover:shadow-[#FFD54F]/50 transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-2"
-            >
-              <Plus className="w-5 h-5" strokeWidth={3} />
-              <span className="tracking-wide">New Booking</span>
-            </button>
-          </div>
+          <button
+            onClick={handleAdd}
+            className="px-4 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 shadow-sm"
+          >
+            <Plus className="w-5 h-5" />
+            <span>New Booking</span>
+          </button>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        {/* Statistics Cards - Clean & Minimal */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
           {/* Total Bookings */}
-          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
+                <p className="text-sm text-gray-600 font-medium">
                   Total Bookings
                 </p>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-2xl font-bold text-gray-900 mt-1">
                   {statistics?.total || 0}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-[#FFD54F] rounded-xl flex items-center justify-center">
-                <Calendar
-                  className="w-7 h-7 text-[#800000]"
-                  strokeWidth={2.5}
-                />
+              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-red-600" />
               </div>
             </div>
           </div>
 
           {/* Pending */}
-          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
-                  Pending
-                </p>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-sm text-gray-600 font-medium">Pending</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
                   {statistics?.pending || 0}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center">
-                <Clock className="w-7 h-7 text-yellow-900" strokeWidth={2.5} />
+              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-5 h-5 text-yellow-600" />
               </div>
             </div>
           </div>
 
           {/* Confirmed */}
-          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
-                  Confirmed
-                </p>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-sm text-gray-600 font-medium">Confirmed</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
                   {statistics?.confirmed || 0}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-green-400 rounded-xl flex items-center justify-center">
-                <CheckCircle
-                  className="w-7 h-7 text-green-900"
-                  strokeWidth={2.5}
-                />
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
             </div>
           </div>
 
           {/* Completed */}
-          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 hover:bg-white/20 transition-all transform hover:-translate-y-1 hover:shadow-lg border border-[#FFD54F]/20">
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
-                  Completed
-                </p>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-sm text-gray-600 font-medium">Completed</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
                   {statistics?.completed || 0}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-400 rounded-xl flex items-center justify-center">
-                <CheckCircle
-                  className="w-7 h-7 text-blue-900"
-                  strokeWidth={2.5}
-                />
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-blue-600" />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Filters Bar */}
-      <div className="bg-white rounded-2xl shadow-xl p-5 border border-[#FFD54F]/20">
-        <div className="flex flex-wrap items-center gap-3">
+      {/* Filters Bar - Clean Design */}
+      <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Status Filter Buttons */}
           <button
             onClick={() => handleStatusFilter("")}
-            className={`px-5 py-2.5 rounded-xl font-semibold transition-all tracking-wide ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
               filters.status === ""
-                ? "bg-gradient-to-r from-[#A60000] to-[#800000] text-white shadow-lg shadow-[#A60000]/30"
-                : "bg-[#FFF8F6] text-gray-700 hover:bg-[#FFD54F]/20 border border-[#FFD54F]/30"
+                ? "bg-red-600 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             All
           </button>
           <button
             onClick={() => handleStatusFilter("pending")}
-            className={`px-5 py-2.5 rounded-xl font-semibold transition-all tracking-wide ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
               filters.status === "pending"
-                ? "bg-yellow-500 text-white shadow-lg shadow-yellow-500/30"
-                : "bg-[#FFF8F6] text-gray-700 hover:bg-yellow-50 border border-yellow-300/30"
+                ? "bg-yellow-500 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Pending
           </button>
           <button
             onClick={() => handleStatusFilter("confirmed")}
-            className={`px-5 py-2.5 rounded-xl font-semibold transition-all tracking-wide ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
               filters.status === "confirmed"
-                ? "bg-green-600 text-white shadow-lg shadow-green-600/30"
-                : "bg-[#FFF8F6] text-gray-700 hover:bg-green-50 border border-green-300/30"
+                ? "bg-green-600 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Confirmed
           </button>
           <button
             onClick={() => handleStatusFilter("completed")}
-            className={`px-5 py-2.5 rounded-xl font-semibold transition-all tracking-wide ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
               filters.status === "completed"
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                : "bg-[#FFF8F6] text-gray-700 hover:bg-blue-50 border border-blue-300/30"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Completed
           </button>
           <button
             onClick={() => handleStatusFilter("cancelled")}
-            className={`px-5 py-2.5 rounded-xl font-semibold transition-all tracking-wide ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
               filters.status === "cancelled"
-                ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
-                : "bg-[#FFF8F6] text-gray-700 hover:bg-red-50 border border-red-300/30"
+                ? "bg-red-600 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Cancelled
@@ -308,22 +284,25 @@ const Bookings = () => {
             {/* Date Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="p-2.5 text-[#A60000] hover:bg-[#FFD54F]/20 rounded-xl transition-all border border-[#FFD54F]/30"
+              className={`p-2 rounded-lg transition-all ${
+                showFilters
+                  ? "bg-red-100 text-red-600"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
               title="Date Filter"
             >
-              <Filter className="w-5 h-5" strokeWidth={2.5} />
+              <Filter className="w-5 h-5" />
             </button>
 
             {/* Refresh Button */}
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="p-2.5 text-[#A60000] hover:bg-[#FFD54F]/20 rounded-xl transition-all disabled:opacity-50 border border-[#FFD54F]/30"
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all disabled:opacity-50"
               title="Refresh"
             >
               <RefreshCw
                 className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
-                strokeWidth={2.5}
               />
             </button>
 
@@ -331,7 +310,7 @@ const Bookings = () => {
             {(filters.status || filters.start_date || filters.end_date) && (
               <button
                 onClick={handleClearFilters}
-                className="px-4 py-2.5 text-sm bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:shadow-lg hover:shadow-red-500/30 transition-all font-semibold tracking-wide"
+                className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium"
               >
                 Clear Filters
               </button>
@@ -341,10 +320,10 @@ const Bookings = () => {
 
         {/* Date Filter Panel */}
         {showFilters && (
-          <div className="mt-5 pt-5 border-t border-[#FFD54F]/30">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide border-l-4 border-[#FFD54F] pl-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Start Date
                 </label>
                 <input
@@ -356,11 +335,11 @@ const Bookings = () => {
                       start_date: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-3 border border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-[#FFF8F6]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide border-l-4 border-[#FFD54F] pl-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   End Date
                 </label>
                 <input
@@ -369,13 +348,13 @@ const Bookings = () => {
                   onChange={(e) =>
                     setDateFilters({ ...dateFilters, end_date: e.target.value })
                   }
-                  className="w-full px-4 py-3 border border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-[#FFF8F6]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
               </div>
               <div className="flex items-end">
                 <button
                   onClick={handleApplyDateFilter}
-                  className="w-full px-5 py-3 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white rounded-xl hover:shadow-lg hover:shadow-[#A60000]/30 transition-all font-bold tracking-wide"
+                  className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
                 >
                   Apply Filter
                 </button>
@@ -387,14 +366,14 @@ const Bookings = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <AlertCircle className="w-6 h-6 text-red-600" strokeWidth={2.5} />
-            <p className="text-red-600 font-semibold">{error}</p>
+            <AlertCircle className="w-5 h-5 text-red-600" />
+            <p className="text-red-700 font-medium text-sm">{error}</p>
           </div>
           <button
             onClick={() => dispatch(clearError())}
-            className="text-red-600 hover:text-red-800 p-2 hover:bg-red-100 rounded-lg transition-all"
+            className="text-red-600 hover:text-red-800 p-1 hover:bg-red-100 rounded transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -412,19 +391,16 @@ const Bookings = () => {
         onDelete={handleDelete}
       />
 
-      {/* View Booking Modal */}
+      {/* View Booking Modal - Clean Design */}
       {showViewModal && viewBooking && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl border-4 border-[#FFD54F]">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-[#A60000] via-[#800000] to-[#FFB200] p-6 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFD54F] opacity-20 rounded-full blur-2xl"></div>
-              <div className="relative flex items-center justify-between">
+            <div className="bg-red-600 p-6 text-white">
+              <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold tracking-wide border-l-4 border-[#FFD54F] pl-3">
-                    Booking Details
-                  </h2>
-                  <p className="text-[#FFD54F] mt-1 font-semibold tracking-wide">
+                  <h2 className="text-xl font-bold">Booking Details</h2>
+                  <p className="text-red-100 mt-1 text-sm">
                     {viewBooking?.booking_code || "N/A"}
                   </p>
                 </div>
@@ -433,26 +409,26 @@ const Bookings = () => {
                     setShowViewModal(false);
                     setViewBooking(null);
                   }}
-                  className="p-2 hover:bg-white/20 rounded-xl transition-all"
+                  className="p-2 hover:bg-red-700 rounded-lg transition-all"
                 >
-                  <X className="w-6 h-6" strokeWidth={2.5} />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
             {/* Modal Content - Scrollable */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)] bg-[#FFF8F6]">
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)] bg-gray-50">
               {/* Status Badge */}
               <div className="mb-6">
                 <span
-                  className={`inline-flex items-center px-5 py-2.5 rounded-full text-sm font-bold tracking-wide shadow-lg ${
+                  className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${
                     viewBooking?.status === "confirmed"
-                      ? "bg-green-100 text-green-800 border-2 border-green-300"
+                      ? "bg-green-100 text-green-800"
                       : viewBooking?.status === "pending"
-                      ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-300"
+                      ? "bg-yellow-100 text-yellow-800"
                       : viewBooking?.status === "completed"
-                      ? "bg-blue-100 text-blue-800 border-2 border-blue-300"
-                      : "bg-red-100 text-red-800 border-2 border-red-300"
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-red-100 text-red-800"
                   }`}
                 >
                   {viewBooking?.status?.toUpperCase() || "UNKNOWN"}
@@ -460,107 +436,95 @@ const Bookings = () => {
               </div>
 
               {/* Customer & Hall Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-white rounded-2xl p-5 shadow-md border border-[#FFD54F]/30">
-                  <h3 className="text-sm font-bold text-[#800000] mb-3 tracking-wide border-l-4 border-[#FFD54F] pl-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
                     Customer
                   </h3>
-                  <p className="text-lg text-gray-900 font-bold">
+                  <p className="text-base text-gray-900 font-semibold">
                     {viewBooking?.customer?.name_english || "N/A"}
                   </p>
                   {viewBooking?.customer?.name_chinese && (
-                    <p className="text-sm text-gray-600 font-medium">
+                    <p className="text-sm text-gray-600">
                       {viewBooking.customer.name_chinese}
                     </p>
                   )}
-                  <p className="text-sm text-[#A60000] font-semibold mt-1">
+                  <p className="text-sm text-red-600 font-medium mt-1">
                     {viewBooking?.customer?.customer_code || "N/A"}
                   </p>
                 </div>
-                <div className="bg-white rounded-2xl p-5 shadow-md border border-[#FFD54F]/30">
-                  <h3 className="text-sm font-bold text-[#800000] mb-3 tracking-wide border-l-4 border-[#FFD54F] pl-2">
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
                     Hall
                   </h3>
-                  <p className="text-lg text-gray-900 font-bold">
+                  <p className="text-base text-gray-900 font-semibold">
                     {viewBooking?.hall?.hall_name || "N/A"}
                   </p>
-                  <p className="text-sm text-[#A60000] font-semibold mt-1">
+                  <p className="text-sm text-red-600 font-medium mt-1">
                     {viewBooking?.hall?.hall_code || "N/A"}
                   </p>
                 </div>
               </div>
 
               {/* Event Details */}
-              <div className="bg-gradient-to-br from-[#FFF8F6] to-white rounded-2xl p-6 mb-6 shadow-md border border-[#FFD54F]/30">
-                <h3 className="text-lg font-bold text-[#800000] mb-5 tracking-wide border-l-4 border-[#FFD54F] pl-3">
+              <div className="bg-white rounded-lg p-5 mb-6 border border-gray-200">
+                <h3 className="text-base font-semibold text-gray-900 mb-4">
                   Event Details
                 </h3>
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">
-                      Event Type
-                    </p>
-                    <p className="font-bold text-gray-900 mt-1">
+                    <p className="text-sm text-gray-600">Event Type</p>
+                    <p className="font-semibold text-gray-900 mt-0.5">
                       {viewBooking?.event_type || "N/A"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">
-                      Guest Count
-                    </p>
-                    <p className="font-bold text-gray-900 mt-1">
+                    <p className="text-sm text-gray-600">Guest Count</p>
+                    <p className="font-semibold text-gray-900 mt-0.5">
                       {viewBooking?.guest_count || "N/A"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">
-                      Event Date
-                    </p>
-                    <p className="font-bold text-gray-900 mt-1">
+                    <p className="text-sm text-gray-600">Event Date</p>
+                    <p className="font-semibold text-gray-900 mt-0.5">
                       {viewBooking?.event_date || "N/A"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">
-                      Time Slot
-                    </p>
-                    <p className="font-bold text-gray-900 mt-1">
+                    <p className="text-sm text-gray-600">Time Slot</p>
+                    <p className="font-semibold text-gray-900 mt-0.5">
                       {viewBooking?.time_slot === "morning"
                         ? "Morning (9AM-2PM)"
                         : "Evening (6PM-11PM)"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">
-                      Start Time
-                    </p>
-                    <p className="font-bold text-gray-900 mt-1">
+                    <p className="text-sm text-gray-600">Start Time</p>
+                    <p className="font-semibold text-gray-900 mt-0.5">
                       {viewBooking?.start_time || "N/A"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">
-                      End Time
-                    </p>
-                    <p className="font-bold text-gray-900 mt-1">
+                    <p className="text-sm text-gray-600">End Time</p>
+                    <p className="font-semibold text-gray-900 mt-0.5">
                       {viewBooking?.end_time || "N/A"}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Financial Summary - UPDATED WITH BREAKDOWN */}
-              <div className="bg-gradient-to-br from-[#FFD54F]/20 to-[#FFB200]/20 rounded-2xl p-6 shadow-md border-2 border-[#FFD54F]">
-                <h3 className="text-lg font-bold text-[#800000] mb-5 tracking-wide border-l-4 border-[#A60000] pl-3">
+              {/* Financial Summary */}
+              <div className="bg-white rounded-lg p-5 border border-gray-200">
+                <h3 className="text-base font-semibold text-gray-900 mb-4">
                   Financial Summary
                 </h3>
                 <div className="space-y-3">
                   {/* Breakdown Section */}
-                  <div className="space-y-2 pb-3 mb-3 border-b-2 border-[#FFD54F]/50">
+                  <div className="space-y-2 pb-3 mb-3 border-b border-gray-200">
                     {/* Hall Rental */}
                     {viewBooking?.hall_rental_amount !== undefined && (
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-600 font-medium">
+                        <span className="text-gray-600 text-sm">
                           Hall Rental
                         </span>
                         <span className="font-semibold text-gray-900">
@@ -575,7 +539,7 @@ const Bookings = () => {
                     {/* Additional Items */}
                     {viewBooking?.additional_items_amount !== undefined && (
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-600 font-medium">
+                        <span className="text-gray-600 text-sm">
                           Additional Items
                         </span>
                         <span className="font-semibold text-gray-900">
@@ -587,16 +551,16 @@ const Bookings = () => {
                       </div>
                     )}
 
-                    {/* Dinner Package - Show if exists */}
+                    {/* Dinner Package */}
                     {viewBooking?.booking_type === "with_dinner" &&
                       viewBooking?.dinner_package && (
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">
+                          <span className="text-gray-600 text-sm">
                             Dinner Package (
                             {viewBooking.dinner_package.number_of_tables}{" "}
                             tables)
                           </span>
-                          <span className="font-semibold text-[#A60000]">
+                          <span className="font-semibold text-red-600">
                             RM{" "}
                             {parseFloat(
                               viewBooking.dinner_package.total_amount ||
@@ -608,12 +572,12 @@ const Bookings = () => {
                       )}
                   </div>
 
-                  {/* Total Amount */}
+                  {/* Subtotal */}
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-900 font-bold text-base">
+                    <span className="text-gray-900 font-semibold">
                       Subtotal
                     </span>
-                    <span className="font-bold text-xl text-[#800000]">
+                    <span className="font-bold text-lg text-gray-900">
                       RM{" "}
                       {parseFloat(
                         viewBooking?.subtotal || viewBooking?.total_amount || 0
@@ -621,10 +585,10 @@ const Bookings = () => {
                     </span>
                   </div>
 
-                  {/* Discount (if any) */}
+                  {/* Discount */}
                   {viewBooking?.discount_amount > 0 && (
                     <div className="flex justify-between items-center text-red-600">
-                      <span className="font-medium">
+                      <span className="text-sm">
                         Discount{" "}
                         {viewBooking?.discount_percentage > 0 &&
                           `(${viewBooking.discount_percentage}%)`}
@@ -638,10 +602,10 @@ const Bookings = () => {
                     </div>
                   )}
 
-                  {/* Tax (if any) */}
+                  {/* Tax */}
                   {viewBooking?.tax_amount > 0 && (
                     <div className="flex justify-between items-center">
-                      <span className="font-medium text-gray-700">
+                      <span className="text-sm text-gray-700">
                         Tax{" "}
                         {viewBooking?.tax_percentage > 0 &&
                           `(${viewBooking.tax_percentage}%)`}
@@ -654,32 +618,30 @@ const Bookings = () => {
                   )}
 
                   {/* Total */}
-                  <div className="flex justify-between items-center pt-3 border-t-2 border-[#FFD54F]">
-                    <span className="text-gray-900 font-bold text-lg">
+                  <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                    <span className="text-gray-900 font-bold">
                       Total Amount
                     </span>
-                    <span className="font-bold text-2xl text-[#800000]">
+                    <span className="font-bold text-xl text-red-600">
                       RM {parseFloat(viewBooking?.total_amount || 0).toFixed(2)}
                     </span>
                   </div>
 
                   {/* Deposit */}
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-700 font-semibold">
+                    <span className="text-gray-700 font-medium text-sm">
                       Deposit Paid
                     </span>
-                    <span className="font-bold text-gray-900">
+                    <span className="font-semibold text-gray-900">
                       RM{" "}
                       {parseFloat(viewBooking?.deposit_amount || 0).toFixed(2)}
                     </span>
                   </div>
 
                   {/* Balance */}
-                  <div className="flex justify-between items-center pt-3 border-t-2 border-[#FFD54F]">
-                    <span className="text-gray-900 font-bold text-lg">
-                      Balance Due
-                    </span>
-                    <span className="font-bold text-2xl text-[#A60000]">
+                  <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                    <span className="text-gray-900 font-bold">Balance Due</span>
+                    <span className="font-bold text-xl text-red-600">
                       RM{" "}
                       {parseFloat(viewBooking?.balance_amount || 0).toFixed(2)}
                     </span>
@@ -689,13 +651,13 @@ const Bookings = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-[#FFF8F6] border-t-2 border-[#FFD54F]/30 flex justify-end space-x-3">
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
               <button
                 onClick={() => {
                   setShowViewModal(false);
                   setViewBooking(null);
                 }}
-                className="px-6 py-3 border-2 border-[#A60000] text-[#A60000] font-bold rounded-xl hover:bg-[#A60000] hover:text-white transition-all tracking-wide"
+                className="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all"
               >
                 Close
               </button>
@@ -704,7 +666,7 @@ const Bookings = () => {
                   setShowViewModal(false);
                   handleEdit(viewBooking);
                 }}
-                className="px-6 py-3 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white font-bold rounded-xl hover:shadow-xl hover:shadow-[#A60000]/40 transition-all tracking-wide"
+                className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-all"
               >
                 Edit Booking
               </button>
@@ -715,18 +677,18 @@ const Bookings = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && bookingToDelete && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border-4 border-red-300">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl">
             <div className="p-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
-                <Trash2 className="w-8 h-8 text-white" strokeWidth={2.5} />
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Trash2 className="w-6 h-6 text-red-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 text-center mb-3 tracking-wide">
+              <h3 className="text-lg font-bold text-gray-900 text-center mb-2">
                 Delete Booking
               </h3>
-              <p className="text-gray-600 text-center mb-6 font-medium">
+              <p className="text-gray-600 text-center mb-6 text-sm">
                 Are you sure you want to delete booking{" "}
-                <span className="font-bold text-[#A60000]">
+                <span className="font-semibold text-red-600">
                   {bookingToDelete?.booking_code || "this booking"}
                 </span>
                 ? This action cannot be undone.
@@ -738,23 +700,23 @@ const Bookings = () => {
                     setBookingToDelete(null);
                   }}
                   disabled={loading}
-                  className="flex-1 px-5 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all tracking-wide"
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDelete}
                   disabled={loading}
-                  className="flex-1 px-5 py-3 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold rounded-xl hover:shadow-xl hover:shadow-red-500/40 transition-all disabled:from-red-300 disabled:to-red-400 flex items-center justify-center space-x-2 tracking-wide"
+                  className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-all disabled:bg-red-300 flex items-center justify-center space-x-2"
                 >
                   {loading ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       <span>Deleting...</span>
                     </>
                   ) : (
                     <>
-                      <Trash2 className="w-5 h-5" strokeWidth={2.5} />
+                      <Trash2 className="w-4 h-4" />
                       <span>Delete</span>
                     </>
                   )}

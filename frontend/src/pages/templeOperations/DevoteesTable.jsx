@@ -11,7 +11,9 @@ const DevoteesTable = ({ devotees, loading, onEdit, onDelete, onView }) => {
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <div className="p-8 text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-800"></div>
-          <p className="mt-4 text-gray-600 font-medium">{t("devotees_page.loading")}</p>
+          <p className="mt-4 text-gray-600 font-medium">
+            {t("devotees_page.loading")}
+          </p>
         </div>
       </div>
     );
@@ -27,7 +29,9 @@ const DevoteesTable = ({ devotees, loading, onEdit, onDelete, onView }) => {
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             {t("devotees_page.no_devotees_found")}
           </h3>
-          <p className="text-gray-600 mb-6">{t("devotees_page.start_by_adding")}</p>
+          <p className="text-gray-600 mb-6">
+            {t("devotees_page.start_by_adding")}
+          </p>
         </div>
       </div>
     );
@@ -77,17 +81,23 @@ const DevoteesTable = ({ devotees, loading, onEdit, onDelete, onView }) => {
                     {devotee.name_english}
                   </div>
                   {devotee.name_chinese && (
-                    <div className="text-sm text-gray-500">{devotee.name_chinese}</div>
+                    <div className="text-sm text-gray-500">
+                      {devotee.name_chinese}
+                    </div>
                   )}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-900">{devotee.ic_number}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">
+                  {devotee.ic_number}
+                </td>
                 <td className="px-6 py-4">
                   <div className="text-sm text-gray-900">{devotee.phone}</div>
                   {devotee.email && (
                     <div className="text-xs text-gray-500">{devotee.email}</div>
                   )}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-900">{devotee.city}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">
+                  {devotee.city}
+                </td>
                 <td className="px-6 py-4">
                   {devotee.is_active ? (
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
@@ -133,7 +143,10 @@ const DevoteesTable = ({ devotees, loading, onEdit, onDelete, onView }) => {
       {/* Mobile Cards */}
       <div className="lg:hidden divide-y divide-gray-200">
         {devotees.map((devotee) => (
-          <div key={devotee.id} className="p-4 hover:bg-gray-50 transition-colors">
+          <div
+            key={devotee.id}
+            className="p-4 hover:bg-gray-50 transition-colors"
+          >
             <div className="flex items-start space-x-3 mb-3">
               <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                 {devotee.devotee_code?.slice(-2) || "??"}
@@ -150,9 +163,13 @@ const DevoteesTable = ({ devotees, loading, onEdit, onDelete, onView }) => {
                     </span>
                   )}
                 </div>
-                <h3 className="font-semibold text-gray-900">{devotee.name_english}</h3>
+                <h3 className="font-semibold text-gray-900">
+                  {devotee.name_english}
+                </h3>
                 {devotee.name_chinese && (
-                  <p className="text-sm text-gray-500">{devotee.name_chinese}</p>
+                  <p className="text-sm text-gray-500">
+                    {devotee.name_chinese}
+                  </p>
                 )}
               </div>
             </div>

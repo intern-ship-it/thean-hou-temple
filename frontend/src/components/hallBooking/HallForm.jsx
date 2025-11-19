@@ -1,6 +1,6 @@
 // src/components/hallBooking/HallForm.jsx
 import React, { useState, useEffect } from "react";
-import { X, Save, Loader2, Building2 } from "lucide-react";
+import { X, Save, Loader2, Building2, AlertCircle } from "lucide-react";
 
 const HallForm = ({ hall, onSubmit, onClose, loading }) => {
   const [formData, setFormData] = useState({
@@ -71,19 +71,20 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden border-4 border-[#FFD54F]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-white" />
+        <div className="bg-gradient-to-r from-[#A60000] via-[#800000] to-[#FFB200] px-6 py-4 flex items-center justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFD54F] opacity-20 rounded-full blur-2xl"></div>
+          <div className="relative flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#FFD54F] to-[#FFB200] rounded-xl flex items-center justify-center shadow-lg">
+              <Building2 className="w-7 h-7 text-[#800000]" strokeWidth={2.5} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-2xl font-bold text-white tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 {hall ? "Edit Hall" : "Add New Hall"}
               </h2>
-              <p className="text-sm text-indigo-100">
+              <p className="text-[#FFD54F] text-sm font-medium tracking-wide">
                 Configure hall details and pricing
               </p>
             </div>
@@ -91,27 +92,27 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
           <button
             onClick={onClose}
             disabled={loading}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="relative p-2 hover:bg-white/20 rounded-xl transition-all"
           >
-            <X className="w-6 h-6 text-white" />
+            <X className="w-6 h-6 text-white" strokeWidth={2.5} />
           </button>
         </div>
 
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]"
+          className="p-6 overflow-y-auto max-h-[calc(90vh-180px)] bg-[#FFF8F6]"
         >
           <div className="space-y-6">
             {/* Basic Information */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-bold text-[#800000] mb-5 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 Basic Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Hall Name */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Hall Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -120,13 +121,16 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                     value={formData.hall_name}
                     onChange={handleChange}
                     disabled={loading}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                      errors.hall_name ? "border-red-500" : "border-gray-300"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium ${
+                      errors.hall_name
+                        ? "border-red-500"
+                        : "border-[#FFD54F]/50"
                     }`}
                     placeholder="e.g., Grand Hall A"
                   />
                   {errors.hall_name && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" strokeWidth={2.5} />
                       {errors.hall_name}
                     </p>
                   )}
@@ -134,7 +138,7 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
 
                 {/* Hall Code */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Hall Code <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -143,13 +147,16 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                     value={formData.hall_code}
                     onChange={handleChange}
                     disabled={loading}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                      errors.hall_code ? "border-red-500" : "border-gray-300"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium ${
+                      errors.hall_code
+                        ? "border-red-500"
+                        : "border-[#FFD54F]/50"
                     }`}
                     placeholder="e.g., HALL-A"
                   />
                   {errors.hall_code && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" strokeWidth={2.5} />
                       {errors.hall_code}
                     </p>
                   )}
@@ -157,7 +164,7 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
 
                 {/* Capacity */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Capacity (people) <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -167,13 +174,14 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                     onChange={handleChange}
                     min="1"
                     disabled={loading}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                      errors.capacity ? "border-red-500" : "border-gray-300"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium ${
+                      errors.capacity ? "border-red-500" : "border-[#FFD54F]/50"
                     }`}
                     placeholder="500"
                   />
                   {errors.capacity && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" strokeWidth={2.5} />
                       {errors.capacity}
                     </p>
                   )}
@@ -181,7 +189,7 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
 
                 {/* Location */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Location
                   </label>
                   <input
@@ -190,7 +198,7 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                     value={formData.location}
                     onChange={handleChange}
                     disabled={loading}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium"
                     placeholder="e.g., Ground Floor, West Wing"
                   />
                 </div>
@@ -198,19 +206,19 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
             </div>
 
             {/* Pricing */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="border-t-2 border-[#FFD54F]/30 pt-6">
+              <h3 className="text-lg font-bold text-[#800000] mb-5 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 Pricing
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Internal Price */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     Internal Price (Members){" "}
                     <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A60000] font-bold">
                       RM
                     </span>
                     <input
@@ -221,16 +229,17 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                       step="0.01"
                       min="0"
                       disabled={loading}
-                      className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium ${
                         errors.internal_price
                           ? "border-red-500"
-                          : "border-gray-300"
+                          : "border-[#FFD54F]/50"
                       }`}
                       placeholder="1500.00"
                     />
                   </div>
                   {errors.internal_price && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" strokeWidth={2.5} />
                       {errors.internal_price}
                     </p>
                   )}
@@ -238,12 +247,12 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
 
                 {/* External Price */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                     External Price (Non-Members){" "}
                     <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A60000] font-bold">
                       RM
                     </span>
                     <input
@@ -254,16 +263,17 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                       step="0.01"
                       min="0"
                       disabled={loading}
-                      className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium ${
                         errors.external_price
                           ? "border-red-500"
-                          : "border-gray-300"
+                          : "border-[#FFD54F]/50"
                       }`}
                       placeholder="2000.00"
                     />
                   </div>
                   {errors.external_price && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" strokeWidth={2.5} />
                       {errors.external_price}
                     </p>
                   )}
@@ -272,14 +282,14 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
             </div>
 
             {/* Additional Details */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="border-t-2 border-[#FFD54F]/30 pt-6">
+              <h3 className="text-lg font-bold text-[#800000] mb-5 tracking-wide border-l-4 border-[#FFD54F] pl-3">
                 Additional Details
               </h3>
 
               {/* Description */}
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Description
                 </label>
                 <textarea
@@ -288,14 +298,14 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                   onChange={handleChange}
                   disabled={loading}
                   rows="3"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium"
                   placeholder="Brief description of the hall..."
                 />
               </div>
 
               {/* Facilities */}
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-[#800000] mb-2 tracking-wide">
                   Facilities
                 </label>
                 <textarea
@@ -304,13 +314,13 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                   onChange={handleChange}
                   disabled={loading}
                   rows="3"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-[#FFD54F]/50 rounded-xl focus:ring-2 focus:ring-[#FFD54F] focus:border-[#FFD54F] bg-white font-medium"
                   placeholder="e.g., Air conditioning, Stage, Sound system, Projector, WiFi..."
                 />
               </div>
 
               {/* Active Status */}
-              <div>
+              <div className="bg-gradient-to-r from-[#FFD54F]/10 to-[#FFB200]/10 border-2 border-[#FFD54F]/30 rounded-xl p-4">
                 <label className="flex items-center space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -318,9 +328,9 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
                     checked={formData.is_active}
                     onChange={handleChange}
                     disabled={loading}
-                    className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-2 focus:ring-indigo-500"
+                    className="w-5 h-5 text-[#A60000] border-gray-300 rounded focus:ring-2 focus:ring-[#FFD54F]"
                   />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-bold text-gray-700">
                     Hall is Active (Available for booking)
                   </span>
                 </label>
@@ -330,12 +340,12 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
         </form>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-end space-x-3">
+        <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-[#FFF8F6] border-t-2 border-[#FFD54F]/30 flex items-center justify-end space-x-3">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"
+            className="px-6 py-3 border-2 border-[#A60000] text-[#A60000] font-bold rounded-xl hover:bg-[#A60000] hover:text-white transition-all disabled:opacity-50 tracking-wide"
           >
             Cancel
           </button>
@@ -343,16 +353,16 @@ const HallForm = ({ hall, onSubmit, onClose, loading }) => {
             type="submit"
             onClick={handleSubmit}
             disabled={loading}
-            className="px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2"
+            className="px-6 py-3 bg-gradient-to-r from-[#A60000] to-[#FFB200] text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-[#A60000]/50 transition-all disabled:from-gray-300 disabled:to-gray-400 flex items-center space-x-2 tracking-wide border-2 border-white"
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Saving...</span>
               </>
             ) : (
               <>
-                <Save className="w-5 h-5" />
+                <Save className="w-5 h-5" strokeWidth={2.5} />
                 <span>{hall ? "Update" : "Save"} Hall</span>
               </>
             )}
